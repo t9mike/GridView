@@ -1,5 +1,7 @@
 ﻿using System;
-namespace UIKit
+using UIKit;
+
+namespace GridView
 {
 	public static class Extensions
 	{

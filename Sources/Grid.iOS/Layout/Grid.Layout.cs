@@ -1,4 +1,6 @@
-﻿namespace UIKit
+﻿using UIKit;
+
+namespace GridView
 {
 	using System;
 	using System.Collections.Generic;

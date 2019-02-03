@@ -1,9 +1,10 @@
-﻿namespace UIKit
+﻿namespace GridView
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using CoreGraphics;
+    using UIKit;
 
 	public partial class Grid : UIView
 	{

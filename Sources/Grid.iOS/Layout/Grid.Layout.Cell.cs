@@ -1,4 +1,6 @@
-﻿namespace UIKit
+﻿using UIKit;
+
+namespace GridView
 {
 	using CoreGraphics;
 

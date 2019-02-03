@@ -1,6 +1,8 @@
 ﻿using System;
 
 using UIKit;
+using GridView;
+using CoreGraphics;
 
 namespace Grid.Sample.iOS
 {
@@ -20,10 +22,10 @@ namespace Grid.Sample.iOS
 			var cyan = new UIView { BackgroundColor = UIColor.Cyan };
 			var yellow = new UIView { BackgroundColor = UIColor.Yellow };
 
-			var portrait = new UIKit.Grid.Layout() 
+			var portrait = new GridView.Grid.Layout() 
 									 { 
 										Spacing = 10, 
-										Padding = new UIKit.Grid.Insets(10,32,10,10) 
+										Padding = new GridView.Grid.Insets(10,32,10,10) 
 									 }
 									 .WithRows(0.75f, 0.25f, 200f)
 									 .WithColumns(0.75f, 0.25f)
@@ -32,23 +34,25 @@ namespace Grid.Sample.iOS
 									 + cyan.At(0, 1) 
 									 + yellow.At(1,1);
 
-			var landscape = new UIKit.Grid.Layout() 
+			var landscape = new GridView.Grid.Layout() 
 									 { 
 										Spacing = 20, 
-										Padding = new UIKit.Grid.Insets(20), 
+										Padding = new GridView.Grid.Insets(20), 
 									 }
 									 .WithRows(1.00f)
 									 .WithColumns(0.50f, 0.25f, 0.25f)
 									 + red.At(0, 0)
-									 + blue.At(0, 1).Vertically(UIKit.Grid.Layout.Alignment.End).Horizontally(UIKit.Grid.Layout.Alignment.Center)
+									 + blue.At(0, 1).Vertically(GridView.Grid.Layout.Alignment.End).Horizontally(GridView.Grid.Layout.Alignment.Center)
 									 + cyan.At(0, 2);
 
-			var grid = new UIKit.Grid();
+			var grid = new GridView.Grid();
 
 			grid.AddLayout(portrait);
 			grid.AddLayout(landscape, (g) => (g.Frame.Width > g.Frame.Height));
 
-			this.View = grid;
+            grid.Frame = UIScreen.MainScreen.Bounds;
+            Add(grid);
+			//this.View = grid;
 		}
 
 		public override void DidReceiveMemoryWarning()
