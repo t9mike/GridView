@@ -1,4 +1,5 @@
 ﻿using System;
+using CoreGraphics;
 using UIKit;
 
 namespace GridView
@@ -76,5 +77,17 @@ namespace GridView
             {
                 Margin = cell.Position.Margin.SetTop(bottom)
             });
+
+        // Users may have this defined in other libraries: don't pollute
+        internal static void SetWidth(this UIView view, nfloat width)
+        {
+            view.Frame = new CGRect(view.Frame.X, view.Frame.Y, width, view.Frame.Height);
+        }
+
+        // Users may have this defined in other libraries: don't pollute
+        internal static void SetHeight(this UIView view, nfloat height)
+        {
+            view.Frame = new CGRect(view.Frame.X, view.Frame.Y, view.Frame.Width, height);
+        }
     }
 }

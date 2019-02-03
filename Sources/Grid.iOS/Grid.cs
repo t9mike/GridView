@@ -15,6 +15,20 @@
 
 		#region Layout
 
+        /// <summary>
+        /// If all columns have fixed or auto sizing, then set the width
+        /// of the grid view automatically. Ignored if at least one column
+        /// has percentage width spec.
+        /// </summary>
+        public bool AutoWidth = true;
+
+        /// <summary>
+        /// If all rows have fixed or auto sizing, then set the height
+        /// of the grid view automatically. Ignored if at least one row
+        /// has percentage height spec.
+        /// </summary>
+        public bool AutoHeight = true;
+
 		private Layout currentLayout;
 
 		private List<Layout> layouts = new List<Layout>();
@@ -98,8 +112,12 @@
 			var absoluteRowHeight = this.CurrentLayout.CalculateAbsoluteRowHeight(this.Frame.Height);
 			var absoluteColumnWidth = this.CurrentLayout.CalculateAbsoluteColumnWidth(this.Frame.Width);
 
-			// Layout subviews
-			foreach (var cell in this.CurrentLayout.Cells)
+            // Used in overall grid auto size
+            nfloat maxWidth = 0;
+            nfloat maxHeight = 0;
+
+            // Layout subviews
+            foreach (var cell in this.CurrentLayout.Cells)
 			{
 				var position = GetCellAbsolutePosition(absoluteColumnWidth, absoluteRowHeight, cell.Position);
 				var size = GetCellAbsoluteSize(absoluteColumnWidth, absoluteRowHeight, cell.Position);
@@ -170,10 +188,25 @@
                     size = cell.View.Frame.Size;
                 }
                 cell.View.Frame = new CGRect(position, size);
-			}
-		}
 
-		#endregion
+                // May not be used
+                maxWidth = NMath.Max(maxWidth, position.X + size.Width);
+                maxHeight = NMath.Max(maxHeight, position.Y + size.Height);
+            }
 
-	}
+            if (AutoWidth && !this.CurrentLayout.ColumnDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
+            {
+                this.SetWidth(maxWidth);
+            }
+
+            if (AutoHeight && !this.CurrentLayout.RowDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
+            {
+                this.SetHeight(maxHeight);
+            }
+        }
+
+
+        #endregion
+
+    }
 }
