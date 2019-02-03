@@ -107,16 +107,20 @@
 				switch (cell.Position.Vertical)
 				{
 					case Layout.Alignment.Center:
+                        // Ignore Margin
 						position.Y += (size.Height / 2) - (cell.InitialSize.Height / 2);
 						size.Height = cell.InitialSize.Height;
 						break;
 
 					case Layout.Alignment.Start:
-						size.Height = cell.InitialSize.Height;
+                        // Honor Margin.Top
+                        position.Y += cell.Position.Margin.Top;
+                        size.Height = cell.InitialSize.Height;
 						break;
 						
 					case Layout.Alignment.End:
-						position.Y += size.Height - cell.InitialSize.Height;
+                        // Honor Margin.Bottom
+                        position.Y += size.Height - cell.InitialSize.Height - cell.Position.Margin.Bottom;
 						size.Height = cell.InitialSize.Height;
 						break;
 						
@@ -127,16 +131,20 @@
 				switch (cell.Position.Horizontal)
 				{
 					case Layout.Alignment.Center:
-						position.X += (size.Width / 2) - (cell.InitialSize.Width / 2);
+                        // Ignore Margin
+                        position.X += (size.Width / 2) - (cell.InitialSize.Width / 2);
 						size.Width = cell.InitialSize.Width;
 						break;
 
 					case Layout.Alignment.Start:
+                        // Honor Margin.Left
 						size.Width = cell.InitialSize.Width;
-						break;
+                        position.X += cell.Position.Margin.Left;
+                        break;
 
 					case Layout.Alignment.End:
-						position.Y += size.Width - cell.InitialSize.Width;
+                        // Honor Margin.Right
+                        position.X += size.Width - cell.InitialSize.Width - cell.Position.Margin.Right;
 						size.Width = cell.InitialSize.Width;
 						break;
 

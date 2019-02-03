@@ -17,6 +17,7 @@ namespace GridView
 					this.Horizontal = other.Horizontal;
 					this.Vertical = other.Vertical;
                     this.NoResize = other.NoResize;
+                    this.Margin = other.Margin;
 				}
 
 				public Position(int row, int column)
@@ -28,7 +29,7 @@ namespace GridView
 					this.Horizontal = default(Alignment);
 					this.Vertical = default(Alignment);
                     this.NoResize = false;
-
+                    this.Margin = UIEdgeInsets.Zero;
                 }
 
 				public int Row { get; set; }
@@ -44,7 +45,9 @@ namespace GridView
 				public Alignment Horizontal { get; set; }
 
                 public bool NoResize { get; set; }
+
+                public UIEdgeInsets Margin { get; set; }
             }
-		}
+        }
 	}
 }

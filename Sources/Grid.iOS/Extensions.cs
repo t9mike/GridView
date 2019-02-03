@@ -17,6 +17,27 @@ namespace GridView
 
 		public static Grid.Layout.Cell Horizontally(this Grid.Layout.Cell cell, Grid.Layout.Alignment alignment) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { Horizontal = alignment });
 
+        /// <summary>
+        /// When set, the cell's view will not be sized during layout.
+        /// </summary>
         public static Grid.Layout.Cell NoResize(this Grid.Layout.Cell cell) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { NoResize = true });
+
+        public static nfloat Width(this UIEdgeInsets edge) => edge.Left + edge.Right;
+        public static nfloat Height(this UIEdgeInsets edge) => edge.Top + edge.Bottom;
+
+        /// <summary>
+        /// Margin is included in size auto calculation (when a col or row spec is -1).
+        /// </summary>
+        public static Grid.Layout.Cell Margin(this Grid.Layout.Cell cell, UIEdgeInsets margin) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { Margin = margin });
+
+        /// <summary>
+        /// Margin is included in size auto calculation (when a col or row spec is -1).
+        /// </summary>
+        public static Grid.Layout.Cell Margin(this Grid.Layout.Cell cell, nfloat top, nfloat left, nfloat bottom, nfloat right) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { Margin = new UIEdgeInsets(top, left, bottom, right) });
+
+        /// <summary>
+        /// Margin is included in size auto calculation (when a col or row spec is -1).
+        /// </summary>
+        public static Grid.Layout.Cell Margin(this Grid.Layout.Cell cell, nfloat all) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { Margin = new UIEdgeInsets(all, all, all, all) });
     }
 }
