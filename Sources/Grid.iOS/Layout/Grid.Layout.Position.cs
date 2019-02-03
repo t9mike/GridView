@@ -18,9 +18,12 @@ namespace GridView
 					this.Vertical = other.Vertical;
                     this.NoResize = other.NoResize;
                     this.Margin = other.Margin;
-				}
+                    this.Tag = other.Tag;
+                    this.StackType = other.StackType;
+                    this.StackCellSize = other.StackCellSize;
+                }
 
-				public Position(int row, int column)
+                public Position(int row, int column)
 				{
 					this.Row = row;
 					this.Column = column;
@@ -30,9 +33,12 @@ namespace GridView
 					this.Vertical = default(Alignment);
                     this.NoResize = false;
                     this.Margin = UIEdgeInsets.Zero;
+                    this.Tag = null;
+                    this.StackType = StackType.None;
+                    this.StackCellSize = 0; // N/A unless StackType is not None
                 }
 
-				public int Row { get; set; }
+                public int Row { get; set; }
 
 				public int Column { get; set; }
 
@@ -47,6 +53,12 @@ namespace GridView
                 public bool NoResize { get; set; }
 
                 public UIEdgeInsets Margin { get; set; }
+
+                public object Tag { get; set; }
+
+                // Temporary to support stack creation fluent interface
+                internal StackType StackType;
+                internal float StackCellSize;
             }
         }
 	}

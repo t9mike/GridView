@@ -42,42 +42,6 @@ namespace GridView
 				return this;
 			}
 
-            /// <summary>
-            /// Defines a new column after last and sets the width.
-            /// If width is not specified, it is auto sized. Also
-            /// automatically creates a row in the underlying grid
-            /// as needed (row 0 is always used).
-            /// </summary>
-            public Layout AddStackColumn(UIView view, float width = -1)
-            {
-                if (!RowDefinitions.Any())
-                {
-                    RowDefinitions.Add(new Definition(-1));
-                }
-                ColumnDefinitions.Add(new Definition(width));
-                var cell = view.At(0, ColumnDefinitions.Count - 1);
-                Add(cell);
-                return this;
-            }
-
-            /// <summary>
-            /// Defines a new row after last and sets the height.
-            /// If height is not specified, it is auto sized. Also
-            /// automatically creates a column in the underlying grid
-            /// as needed (col 0 is always used).
-            /// </summary>
-            public Layout AddStackRow(UIView view, float height = -1)
-            {
-                if (!ColumnDefinitions.Any())
-                {
-                    ColumnDefinitions.Add(new Definition(-1));
-                }
-                RowDefinitions.Add(new Definition(height));
-                var cell = view.At(RowDefinitions.Count - 1, 0);
-                Add(cell);
-                return this;
-            }
-
             #endregion
 
             #region Cells
@@ -180,7 +144,29 @@ namespace GridView
 
 			public static Layout operator +(Layout layout, Cell cell)
 			{
-				layout.Add(cell);
+                // "Stack" is supported through automatic creation of 
+                // necessary grid rows/columns
+                if (cell.Position.StackType == StackType.Horizontal)
+                {
+                    if (!layout.RowDefinitions.Any())
+                    {
+                        layout.RowDefinitions.Add(new Definition(-1));
+                    }
+                    layout.ColumnDefinitions.Add(new Definition(cell.Position.StackCellSize));
+                    cell.Position = new Position(cell.Position) { Row = 0, Column = layout.ColumnDefinitions.Count - 1 };
+
+                }
+                if (cell.Position.StackType == StackType.Vertical)
+                {
+                    if (!layout.ColumnDefinitions.Any())
+                    {
+                        layout.ColumnDefinitions.Add(new Definition(-1));
+                    }
+                    layout.RowDefinitions.Add(new Definition(cell.Position.StackCellSize));
+                    cell.Position = new Position(cell.Position) { Row = layout.RowDefinitions.Count - 1, Column = 0 };
+                }
+
+                layout.Add(cell);
 				return layout;
 			}
 

@@ -19,6 +19,43 @@ namespace GridView
 		public static Grid.Layout.Cell Horizontally(this Grid.Layout.Cell cell, Grid.Layout.Alignment alignment) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { Horizontal = alignment });
 
         /// <summary>
+        /// Defines a new column after last and sets the width.
+        /// If width is not specified, it is auto sized. Also
+        /// automatically creates a row in the underlying grid
+        /// as needed (row 0 is always used).
+        /// </summary>
+        public static Grid.Layout.Cell AddStackColumn(this UIView view, float width = -1)
+        {
+            // Row,Column is updated via + operator (when added to layout)
+            return new Grid.Layout.Cell(view, new Grid.Layout.Position(0, 0)
+            { 
+                StackType = Grid.StackType.Horizontal,
+                StackCellSize = width
+            });
+        }
+
+        /// <summary>
+        /// Defines a new row after last and sets the height.
+        /// If height is not specified, it is auto sized. Also
+        /// automatically creates a column in the underlying grid
+        /// as needed (col 0 is always used).
+        /// </summary>
+        public static Grid.Layout.Cell AddStackRow(this UIView view, float height = -1)
+        {
+            // Row,Column is updated via + operator (when added to layout)
+            return new Grid.Layout.Cell(view, new Grid.Layout.Position(0, 0)
+            { 
+                StackType = Grid.StackType.Vertical,
+                StackCellSize = height
+            });
+        }
+
+        /// <summary>
+        /// Provides a way to attach a .NET value to the grid cell. Useful for debugging.
+        /// </summary>
+        public static Grid.Layout.Cell Tag(this Grid.Layout.Cell cell, object tag) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { Tag = tag });
+
+        /// <summary>
         /// When set, the cell's view will not be sized during layout.
         /// </summary>
         public static Grid.Layout.Cell NoResize(this Grid.Layout.Cell cell) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { NoResize = true });

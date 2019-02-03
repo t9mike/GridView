@@ -1,4 +1,5 @@
 ﻿using UIKit;
+using System;
 
 namespace GridView
 {
@@ -6,7 +7,14 @@ namespace GridView
 
 	public partial class Grid : UIView
 	{
-		public partial class Layout
+        internal enum StackType
+        {
+            None,
+            Vertical,
+            Horizontal
+        }
+
+        public partial class Layout
 		{
 			public class Cell
 			{
@@ -21,8 +29,8 @@ namespace GridView
 
 				public UIView View { get; private set; }
 
-				public Position Position { get; private set; }
-			}
+				public Position Position { get; internal set; }
+            }
 		}
 	}
 }
