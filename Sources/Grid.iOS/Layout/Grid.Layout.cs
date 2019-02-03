@@ -10,9 +10,9 @@ namespace GridView
 	{
 		public partial class Layout
 		{
-			#region Margins
+            #region Margins
 
-			public Insets Padding { get; set; }
+            public Insets Padding { get; set; }
 
 			public float Spacing { get; set; }
 
@@ -26,27 +26,63 @@ namespace GridView
 
 			#region Definitions
 
-			public IEnumerable<Definition> ColumnDefinitions { get; private set; } = new[] { new Definition(1) };
+			public List<Definition> ColumnDefinitions { get; private set; } = new List<Definition>();
 
-			public IEnumerable<Definition> RowDefinitions { get; private set; } = new[] { new Definition(1) };
+			public List<Definition> RowDefinitions { get; private set; } = new List<Definition>();
 
 			public Layout WithRows(params float[] rows)
 			{
-				this.RowDefinitions = rows.Select(size => new Definition(size));
+				this.RowDefinitions = rows.Select(size => new Definition(size)).ToList();
 				return this;
 			}
 
 			public Layout WithColumns(params float[] columns)
 			{
-				this.ColumnDefinitions = columns.Select(size => new Definition(size));
+				this.ColumnDefinitions = columns.Select(size => new Definition(size)).ToList();
 				return this;
 			}
 
-			#endregion
+            /// <summary>
+            /// Defines a new column after last and sets the width.
+            /// If width is not specified, it is auto sized. Also
+            /// automatically creates a row in the underlying grid
+            /// as needed (row 0 is always used).
+            /// </summary>
+            public Layout AddStackColumn(UIView view, float width = -1)
+            {
+                if (!RowDefinitions.Any())
+                {
+                    RowDefinitions.Add(new Definition(-1));
+                }
+                ColumnDefinitions.Add(new Definition(width));
+                var cell = view.At(0, ColumnDefinitions.Count - 1);
+                Add(cell);
+                return this;
+            }
 
-			#region Cells
+            /// <summary>
+            /// Defines a new row after last and sets the height.
+            /// If height is not specified, it is auto sized. Also
+            /// automatically creates a column in the underlying grid
+            /// as needed (col 0 is always used).
+            /// </summary>
+            public Layout AddStackRow(UIView view, float height = -1)
+            {
+                if (!ColumnDefinitions.Any())
+                {
+                    ColumnDefinitions.Add(new Definition(-1));
+                }
+                RowDefinitions.Add(new Definition(height));
+                var cell = view.At(RowDefinitions.Count - 1, 0);
+                Add(cell);
+                return this;
+            }
 
-			private List<Cell> cells = new List<Cell>();
+            #endregion
+
+            #region Cells
+
+            private List<Cell> cells = new List<Cell>();
 
 			public IEnumerable<Cell> Cells => cells.ToArray();
 
