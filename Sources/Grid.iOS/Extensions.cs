@@ -39,5 +39,42 @@ namespace GridView
         /// Margin is included in size auto calculation (when a col or row spec is -1).
         /// </summary>
         public static Grid.Layout.Cell Margin(this Grid.Layout.Cell cell, nfloat all) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { Margin = new UIEdgeInsets(all, all, all, all) });
+
+        public static UIEdgeInsets SetTop(this UIEdgeInsets inset, nfloat top) =>
+            new UIEdgeInsets(top, inset.Left, inset.Bottom, inset.Right);
+        public static UIEdgeInsets SetLeft(this UIEdgeInsets inset, nfloat left) =>
+            new UIEdgeInsets(inset.Top, left, inset.Bottom, inset.Right);
+        public static UIEdgeInsets SetRight(this UIEdgeInsets inset, nfloat right) =>
+            new UIEdgeInsets(inset.Top, inset.Left, inset.Bottom, right);
+        public static UIEdgeInsets SetBottom(this UIEdgeInsets inset, nfloat bottom) =>
+            new UIEdgeInsets(inset.Top, inset.Left, bottom, inset.Right);
+
+        public static Grid.Layout.Cell MarginTop(this Grid.Layout.Cell cell,
+            nfloat top) => new Grid.Layout.Cell(cell.View,
+            new Grid.Layout.Position(cell.Position)
+            {
+                Margin = cell.Position.Margin.SetTop(top)
+            });
+
+        public static Grid.Layout.Cell MarginLeft(this Grid.Layout.Cell cell, 
+            nfloat left) => new Grid.Layout.Cell(cell.View, 
+            new Grid.Layout.Position(cell.Position) 
+            { 
+                Margin = cell.Position.Margin.SetLeft(left) 
+            });
+
+        public static Grid.Layout.Cell MarginRight(this Grid.Layout.Cell cell,
+            nfloat right) => new Grid.Layout.Cell(cell.View,
+            new Grid.Layout.Position(cell.Position)
+            {
+                Margin = cell.Position.Margin.SetRight(right)
+            });
+
+        public static Grid.Layout.Cell MarginBottom(this Grid.Layout.Cell cell,
+            nfloat bottom) => new Grid.Layout.Cell(cell.View,
+            new Grid.Layout.Position(cell.Position)
+            {
+                Margin = cell.Position.Margin.SetTop(bottom)
+            });
     }
 }
