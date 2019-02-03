@@ -106,7 +106,13 @@
 
 				switch (cell.Position.Vertical)
 				{
-					case Layout.Alignment.Center:
+                    case Layout.Alignment.Stretched:
+                        // Honor Margin.Top and Bottom
+                        position.Y += cell.Position.Margin.Top;
+                        size.Height -=  cell.Position.Margin.Height();
+                        break;
+
+                    case Layout.Alignment.Center:
                         // Ignore Margin
 						position.Y += (size.Height / 2) - (cell.InitialSize.Height / 2);
 						size.Height = cell.InitialSize.Height;
@@ -130,7 +136,13 @@
 
 				switch (cell.Position.Horizontal)
 				{
-					case Layout.Alignment.Center:
+                    case Layout.Alignment.Stretched:
+                        // Honor Margin.Left and Right
+                        position.X += cell.Position.Margin.Left;
+                        size.Width -= cell.Position.Margin.Width();
+                        break;
+
+                    case Layout.Alignment.Center:
                         // Ignore Margin
                         position.X += (size.Width / 2) - (cell.InitialSize.Width / 2);
 						size.Width = cell.InitialSize.Width;
