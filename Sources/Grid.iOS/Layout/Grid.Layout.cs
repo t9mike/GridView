@@ -66,7 +66,24 @@ namespace GridView
 			{
 				var absoluteColumnWidth = new nfloat[this.ColumnDefinitions.Count()];
 
-				var remaining = totalWidth - this.ColumnDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
+                var remaining = totalWidth - this.ColumnDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
+
+                // Determine size of auto sized columns; only columns with colspan=1
+                // will be considered
+                for (int column = 0; column < this.ColumnDefinitions.Count(); column++)
+                {
+                    var definition = this.ColumnDefinitions.ElementAt(column);
+                    if (definition.Size == -1)
+                    {
+                        var autoSizedCells = Cells.Where(c => c.Position.Column == column && c.Position.ColumnSpan == 1);
+                        if (autoSizedCells.Any())
+                        {
+                            absoluteColumnWidth[column] = autoSizedCells.Max(c => c.View.Frame.Width);
+                            remaining -= absoluteColumnWidth[column];
+                        }
+                    }
+                }
+
 				remaining -= this.Padding.Left + this.Padding.Right;
 				remaining -= (this.ColumnDefinitions.Count() - 1) * this.Spacing;
 				remaining = (nfloat)Math.Max(0, remaining);
@@ -74,8 +91,11 @@ namespace GridView
 				for (int column = 0; column < this.ColumnDefinitions.Count(); column++)
 				{
 					var definition = this.ColumnDefinitions.ElementAt(column);
-					absoluteColumnWidth[column] = definition.Size > 1 ? definition.Size : definition.Size * remaining;
-				}
+                    if (definition.Size != -1)
+                    {
+                        absoluteColumnWidth[column] = definition.Size > 1 ? definition.Size : definition.Size * remaining;
+                    }
+                }
 
 				return absoluteColumnWidth;
 			}
@@ -85,15 +105,35 @@ namespace GridView
 				var absoluteRowHeight = new nfloat[this.RowDefinitions.Count()];
 
 				var remaining = totalHeight - this.RowDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
-				remaining -= this.Padding.Top + this.Padding.Bottom;
+
+                // Determine size of auto sized rows; only rows with rowspan=1
+                // will be considered
+                for (int row = 0; row < this.RowDefinitions.Count(); row++)
+                {
+                    var definition = this.RowDefinitions.ElementAt(row);
+                    if (definition.Size == -1)
+                    {
+                        var autoSizedCells = Cells.Where(c => c.Position.Row == row && c.Position.RowSpan == 1);
+                        if (autoSizedCells.Any())
+                        {
+                            absoluteRowHeight[row] = autoSizedCells.Max(c => c.View.Frame.Height);
+                            remaining -= absoluteRowHeight[row];
+                        }
+                    }
+                }
+
+                remaining -= this.Padding.Top + this.Padding.Bottom;
 				remaining -= (this.RowDefinitions.Count() - 1) * this.Spacing;
 				remaining = (nfloat)Math.Max(0, remaining);
 
 				for (int row = 0; row < this.RowDefinitions.Count(); row++)
 				{
 					var definition = this.RowDefinitions.ElementAt(row);
-					absoluteRowHeight[row] = definition.Size > 1 ? definition.Size : definition.Size * remaining;
-				}
+                    if (definition.Size != -1)
+                    {
+                        absoluteRowHeight[row] = definition.Size > 1 ? definition.Size : definition.Size * remaining;
+                    }
+                }
 
 				return absoluteRowHeight;
 			}

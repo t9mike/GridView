@@ -144,7 +144,12 @@
 						break;
 				}
 
-				cell.View.Frame = new CGRect(position, size);
+
+                if (cell.Position.NoResize)
+                {
+                    size = cell.View.Frame.Size;
+                }
+                cell.View.Frame = new CGRect(position, size);
 			}
 		}
 

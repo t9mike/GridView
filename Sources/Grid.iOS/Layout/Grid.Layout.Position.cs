@@ -16,6 +16,7 @@ namespace GridView
 					this.ColumnSpan = other.ColumnSpan;
 					this.Horizontal = other.Horizontal;
 					this.Vertical = other.Vertical;
+                    this.NoResize = other.NoResize;
 				}
 
 				public Position(int row, int column)
@@ -26,7 +27,9 @@ namespace GridView
 					this.ColumnSpan = 1;
 					this.Horizontal = default(Alignment);
 					this.Vertical = default(Alignment);
-				}
+                    this.NoResize = false;
+
+                }
 
 				public int Row { get; set; }
 
@@ -39,7 +42,9 @@ namespace GridView
 				public Alignment Vertical { get; set; }
 
 				public Alignment Horizontal { get; set; }
-			}
+
+                public bool NoResize { get; set; }
+            }
 		}
 	}
 }
