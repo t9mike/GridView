@@ -13,7 +13,15 @@
 			
 		}
 
-		#region Layout
+        /// <summary>
+        /// Adds a default layout.
+        /// </summary>
+        public Grid(Layout layout)
+        {
+            AddLayout(layout);
+        }
+
+        #region Layout
 
         /// <summary>
         /// If all columns have fixed or auto sizing, then set the width
@@ -182,7 +190,7 @@
 						break;
 				}
 
-
+                Console.WriteLine("tag is " + cell.Position.Tag);
                 if (cell.Position.NoResize)
                 {
                     size = cell.View.Frame.Size;
