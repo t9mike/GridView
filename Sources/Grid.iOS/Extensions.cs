@@ -114,7 +114,7 @@ namespace GridView
             nfloat bottom) => new Grid.Layout.Cell(cell.View,
             new Grid.Layout.Position(cell.Position)
             {
-                Margin = cell.Position.Margin.SetTop(bottom)
+                Margin = cell.Position.Margin.SetBottom(bottom)
             });
 
         // Users may have this defined in other libraries: don't pollute
