@@ -75,7 +75,8 @@ namespace GridView
                     var definition = this.ColumnDefinitions.ElementAt(column);
                     if (definition.Size == -1)
                     {
-                        var autoSizedCells = Cells.Where(c => c.Position.Column == column && c.Position.ColumnSpan == 1);
+                        var autoSizedCells = Cells.Where(c => c.Position.Column == column &&
+                            c.Position.ColumnSpan == 1 && c.IncludeInAutoSizeCalcs);
                         if (autoSizedCells.Any())
                         {
                             absoluteColumnWidth[column] = autoSizedCells.Max(c => c.View.Frame.Width + c.Position.Margin.Width());
@@ -113,7 +114,7 @@ namespace GridView
                     var definition = this.RowDefinitions.ElementAt(row);
                     if (definition.Size == -1)
                     {
-                        var autoSizedCells = Cells.Where(c => c.Position.Row == row && c.Position.RowSpan == 1);
+                        var autoSizedCells = Cells.Where(c => c.Position.Row == row && c.Position.RowSpan == 1 && c.IncludeInAutoSizeCalcs);
                         if (autoSizedCells.Any())
                         {
                             absoluteRowHeight[row] = autoSizedCells.Max(c => c.View.Frame.Height + c.Position.Margin.Height());

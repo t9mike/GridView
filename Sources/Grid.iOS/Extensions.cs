@@ -18,6 +18,8 @@ namespace GridView
 
 		public static Grid.Layout.Cell Horizontally(this Grid.Layout.Cell cell, Grid.Layout.Alignment alignment) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { Horizontal = alignment });
 
+        public static Grid.Layout.Cell CollapseHidden(this Grid.Layout.Cell cell, bool collapseHidden) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { CollapseHidden = collapseHidden });
+
         /// <summary>
         /// Defines a new column after last and sets the width.
         /// If width is not specified, it is auto sized. Also

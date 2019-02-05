@@ -30,6 +30,12 @@ namespace GridView
 				public UIView View { get; private set; }
 
                 public Position Position { get; internal set; }
+
+                /// <summary>
+                /// True when the cell will be inspected to determine column/row with if 
+                /// size spec is -1 or when AutoWidth or AutoHeight is true.
+                /// </summary>
+                public bool IncludeInAutoSizeCalcs => View.Hidden == false || Position.CollapseHidden == false;
             }
 		}
 	}

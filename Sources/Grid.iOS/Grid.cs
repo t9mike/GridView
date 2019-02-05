@@ -234,8 +234,8 @@
 
             if (AutoWidth && !this.CurrentLayout.ColumnDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
             {
-                nfloat min_left = this.CurrentLayout.Cells.Min(c => c.View.Frame.X);
-                nfloat max_right = this.CurrentLayout.Cells.Max(c => c.View.Frame.Right);
+                nfloat min_left = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Min(c => c.View.Frame.X);
+                nfloat max_right = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Max(c => c.View.Frame.Right);
                 nfloat width = max_right - min_left;
 
                 if (Frame.Width != width)
@@ -247,8 +247,8 @@
 
             if (AutoHeight && !this.CurrentLayout.RowDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
             {
-                nfloat min_top = this.CurrentLayout.Cells.Min(c => c.View.Frame.Y);
-                nfloat max_bottom = this.CurrentLayout.Cells.Max(c => c.View.Frame.Bottom);
+                nfloat min_top = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Min(c => c.View.Frame.Y);
+                nfloat max_bottom = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Max(c => c.View.Frame.Bottom);
                 nfloat height = max_bottom - min_top;
 
                 if (Frame.Height != height)
