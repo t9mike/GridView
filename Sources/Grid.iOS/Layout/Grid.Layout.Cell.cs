@@ -29,7 +29,7 @@ namespace GridView
 
 				public UIView View { get; private set; }
 
-				public Position Position { get; internal set; }
+                public Position Position { get; internal set; }
             }
 		}
 	}
