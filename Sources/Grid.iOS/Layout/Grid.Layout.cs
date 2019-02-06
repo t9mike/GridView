@@ -151,9 +151,9 @@ namespace GridView
                 {
                     if (!layout.RowDefinitions.Any())
                     {
-                        layout.RowDefinitions.Add(new Definition(-1));
+                        layout.RowDefinitions.Add(new Definition((float)cell.Position.StackCellSize.Height));
                     }
-                    layout.ColumnDefinitions.Add(new Definition(cell.Position.StackCellSize));
+                    layout.ColumnDefinitions.Add(new Definition((float)cell.Position.StackCellSize.Width));
                     cell.Position = new Position(cell.Position) { Row = 0, Column = layout.ColumnDefinitions.Count - 1 };
 
                 }
@@ -161,9 +161,9 @@ namespace GridView
                 {
                     if (!layout.ColumnDefinitions.Any())
                     {
-                        layout.ColumnDefinitions.Add(new Definition(-1));
+                        layout.ColumnDefinitions.Add(new Definition((float)cell.Position.StackCellSize.Width));
                     }
-                    layout.RowDefinitions.Add(new Definition(cell.Position.StackCellSize));
+                    layout.RowDefinitions.Add(new Definition((float)cell.Position.StackCellSize.Height));
                     cell.Position = new Position(cell.Position) { Row = layout.RowDefinitions.Count - 1, Column = 0 };
                 }
 

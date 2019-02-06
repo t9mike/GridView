@@ -1,4 +1,5 @@
 ﻿using UIKit;
+using CoreGraphics;
 
 namespace GridView
 {
@@ -36,7 +37,7 @@ namespace GridView
                     this.Margin = UIEdgeInsets.Zero;
                     this.Tag = null;
                     this.StackType = StackType.None;
-                    this.StackCellSize = 0; // N/A unless StackType is not None
+                    this.StackCellSize = CGSize.Empty; // N/A unless StackType is not None
                     this.CollapseHidden = true;
                 }
 
@@ -62,7 +63,7 @@ namespace GridView
 
                 // Temporary to support stack creation fluent interface
                 internal StackType StackType;
-                internal float StackCellSize;
+                internal CGSize StackCellSize;
             }
         }
 	}

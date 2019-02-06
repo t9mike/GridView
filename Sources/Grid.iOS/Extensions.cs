@@ -26,13 +26,13 @@ namespace GridView
         /// automatically creates a row in the underlying grid
         /// as needed (row 0 is always used).
         /// </summary>
-        public static Grid.Layout.Cell AddStackColumn(this UIView view, float width = -1)
+        public static Grid.Layout.Cell AddStackColumn(this UIView view, float width = -1, float height = -1)
         {
             // Row,Column is updated via + operator (when added to layout)
             return new Grid.Layout.Cell(view, new Grid.Layout.Position(0, 0)
             { 
                 StackType = Grid.StackType.Horizontal,
-                StackCellSize = width
+                StackCellSize = new CGSize(width, height)
             });
         }
 
@@ -42,13 +42,13 @@ namespace GridView
         /// automatically creates a column in the underlying grid
         /// as needed (col 0 is always used).
         /// </summary>
-        public static Grid.Layout.Cell AddStackRow(this UIView view, float height = -1)
+        public static Grid.Layout.Cell AddStackRow(this UIView view, float width = -1, float height = -1)
         {
             // Row,Column is updated via + operator (when added to layout)
             return new Grid.Layout.Cell(view, new Grid.Layout.Position(0, 0)
             { 
                 StackType = Grid.StackType.Vertical,
-                StackCellSize = height
+                StackCellSize = new CGSize(width, height)
             });
         }
 
