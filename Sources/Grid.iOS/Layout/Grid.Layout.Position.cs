@@ -30,8 +30,8 @@ namespace GridView
                     this.Column = column;
                     this.RowSpan = 1;
                     this.ColumnSpan = 1;
-                    this.Horizontal = default(Alignment);
-                    this.Vertical = default(Alignment);
+                    this.Horizontal = Alignment.Start;
+                    this.Vertical = Alignment.Start;
                     this.NoResize = false;
                     this.Margin = UIEdgeInsets.Zero;
                     this.Tag = null;

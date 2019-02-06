@@ -46,7 +46,7 @@
             var layout = new Layout()
                 + inner_view.AddStackColumn((float)outer_rect.Width).
                     Horizontally(horizAlignment).
-                    Vertically(verticalAlignment);
+                    Vertically(verticalAlignment).Tag("AlignmentGrid");
             var grid = new Grid(layout);
             grid.Frame = outer_rect;
             return grid;
@@ -166,10 +166,17 @@
             var absoluteRowHeight = this.CurrentLayout.CalculateAbsoluteRowHeight(this.Frame.Height);
             var absoluteColumnWidth = this.CurrentLayout.CalculateAbsoluteColumnWidth(this.Frame.Width);
 
+            Console.WriteLine($"{debugIndent}   RowDefinitions      = [{string.Join(",", this.CurrentLayout.RowDefinitions.Select(r => r.Size))}]");
+            Console.WriteLine($"{debugIndent}   absoluteRowHeight   = [{string.Join(",", absoluteRowHeight)}]");
+            Console.WriteLine($"{debugIndent}   ColumnDefinitions   = [{string.Join(",", this.CurrentLayout.ColumnDefinitions.Select(r => r.Size))}]");
+            Console.WriteLine($"{debugIndent}   absoluteColumnWidth = [{string.Join(",", absoluteColumnWidth)}]");
+
             // Layout subviews
             foreach (var cell in this.CurrentLayout.Cells)
             {
-                Console.WriteLine($"{debugIndent}   Laying out tag " + cell.Position.Tag);
+                Console.WriteLine();
+                Console.WriteLine($"{debugIndent}   Laying out tag " + cell.Position.Tag + ", " +
+                    cell.View.GetType());
 
                 cell.View.LayoutSubviews();
 
@@ -248,45 +255,50 @@
                         break;
                 }
 
-                //if (layout)
-                //{
-                //}
                 if (cell.Position.NoResize)
                 {
                     cell_size = cell.View.Frame.Size;
                 }
                 var newFrame = new CGRect(position, cell_size);
+                Console.Write($"{debugIndent}   newFrame={newFrame}, cell.View.Frame={cell.View.Frame}");
                 if (newFrame != cell.View.Frame)
                 {
-                    Console.WriteLine($"{debugIndent}   Changing frame from {cell.View.Frame} to {newFrame}");
+                    Console.Write(": UPDATE");
                     cell.View.Frame = newFrame;
                 }
+                Console.WriteLine();
             }
+
+            Console.WriteLine();
 
             if (AutoWidth && !this.CurrentLayout.ColumnDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
             {
                 nfloat min_left = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Min(c => c.View.Frame.X);
                 nfloat max_right = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Max(c => c.View.Frame.Right);
-                nfloat width = max_right - min_left;
+                nfloat newWidth = max_right - min_left;
 
-                if (Frame.Width != width)
+                Console.Write($"{debugIndent}   AutoWidth newWidth={newWidth}, Frame.Width={Frame.Width}");
+                if (Frame.Width != newWidth)
                 {
-                    Console.WriteLine($"{debugIndent}   SetWidth {width} (was {Frame.Width})");
-                    this.SetWidth(width);
+                    Console.Write(": UPDATE");
+                    this.SetWidth(newWidth);
                 }
+                Console.WriteLine();
             }
 
             if (AutoHeight && !this.CurrentLayout.RowDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
             {
                 nfloat min_top = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Min(c => c.View.Frame.Y);
                 nfloat max_bottom = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Max(c => c.View.Frame.Bottom);
-                nfloat height = max_bottom - min_top;
+                nfloat newHeight = max_bottom - min_top;
 
-                if (Frame.Height != height)
+                Console.Write($"{debugIndent}   AutoHeight newHeight={newHeight}, Frame.Height={Frame.Height}");
+                if (Frame.Height != newHeight)
                 {
-                    Console.WriteLine($"{debugIndent}   SetHeight {height} (was {Frame.Height})");
-                    this.SetHeight(height);
+                    Console.Write($": UPDATE");
+                    this.SetHeight(newHeight);
                 }
+                Console.WriteLine();
             }
 
             firstLayout = false;
