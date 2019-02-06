@@ -181,11 +181,18 @@
                 cell.View.LayoutSubviews();
 
                 var position = GetCellAbsolutePosition(absoluteColumnWidth, absoluteRowHeight, cell.Position);
-                var cell_size = GetCellAbsoluteSize(absoluteColumnWidth, absoluteRowHeight, cell.Position);
-                var view_size = cell.View.Frame.Size;
-                if (view_size.Width == 0 && view_size.Height == 0)
+                var cellSize = GetCellAbsoluteSize(absoluteColumnWidth, absoluteRowHeight, cell.Position);
+                var viewSize = cell.View.Frame.Size;
+
+                Console.WriteLine($"{debugIndent}      position = {position}");
+                Console.WriteLine($"{debugIndent}      cellSize = {cellSize}");
+                Console.WriteLine($"{debugIndent}      viewSize = {viewSize}");
+
+
+                if (viewSize.Width == 0 && viewSize.Height == 0)
                 {
-                    view_size = cell.InitialSize;
+                    viewSize = cell.InitialSize;
+                    Console.WriteLine($"{debugIndent}      viewSize changed to cell.InitialSize = {viewSize}");
                 }
                 bool layout = false;
 
@@ -194,27 +201,27 @@
                     case Layout.Alignment.Stretched:
                         // Honor Margin.Top and Bottom
                         position.Y += cell.Position.Margin.Top;
-                        cell_size.Height -= cell.Position.Margin.Height();
+                        cellSize.Height -= cell.Position.Margin.Height();
                         break;
 
                     case Layout.Alignment.Center:
                         // Ignore Margin
-                        position.Y += (cell_size.Height / 2) - (view_size.Height / 2);
-                        cell_size.Height = view_size.Height;
+                        position.Y += (cellSize.Height / 2) - (viewSize.Height / 2);
+                        cellSize.Height = viewSize.Height;
                         layout = true;
                         break;
 
                     case Layout.Alignment.Start:
                         // Honor Margin.Top
                         position.Y += cell.Position.Margin.Top;
-                        cell_size.Height = view_size.Height;
+                        cellSize.Height = viewSize.Height;
                         layout = true;
                         break;
 
                     case Layout.Alignment.End:
                         // Honor Margin.Bottom
-                        position.Y += cell_size.Height - view_size.Height - cell.Position.Margin.Bottom;
-                        cell_size.Height = view_size.Height;
+                        position.Y += cellSize.Height - viewSize.Height - cell.Position.Margin.Bottom;
+                        cellSize.Height = viewSize.Height;
                         layout = true;
                         break;
 
@@ -227,27 +234,27 @@
                     case Layout.Alignment.Stretched:
                         // Honor Margin.Left and Right
                         position.X += cell.Position.Margin.Left;
-                        cell_size.Width -= cell.Position.Margin.Width();
+                        cellSize.Width -= cell.Position.Margin.Width();
                         break;
 
                     case Layout.Alignment.Center:
                         // Ignore Margin
-                        position.X += (cell_size.Width / 2) - (view_size.Width / 2);
-                        cell_size.Width = view_size.Width;
+                        position.X += (cellSize.Width / 2) - (viewSize.Width / 2);
+                        cellSize.Width = viewSize.Width;
                         layout = true;
                         break;
 
                     case Layout.Alignment.Start:
                         // Honor Margin.Left
-                        cell_size.Width = view_size.Width;
+                        cellSize.Width = viewSize.Width;
                         position.X += cell.Position.Margin.Left;
                         layout = true;
                         break;
 
                     case Layout.Alignment.End:
                         // Honor Margin.Right
-                        position.X += cell_size.Width - view_size.Width - cell.Position.Margin.Right;
-                        cell_size.Width = view_size.Width;
+                        position.X += cellSize.Width - viewSize.Width - cell.Position.Margin.Right;
+                        cellSize.Width = viewSize.Width;
                         layout = true;
                         break;
 
@@ -257,10 +264,10 @@
 
                 if (cell.Position.NoResize)
                 {
-                    cell_size = cell.View.Frame.Size;
+                    cellSize = cell.View.Frame.Size;
                 }
-                var newFrame = new CGRect(position, cell_size);
-                Console.Write($"{debugIndent}   newFrame={newFrame}, cell.View.Frame={cell.View.Frame}");
+                var newFrame = new CGRect(position, cellSize);
+                Console.Write($"{debugIndent}      newFrame={newFrame}, cell.View.Frame={cell.View.Frame}");
                 if (newFrame != cell.View.Frame)
                 {
                     Console.Write(": UPDATE");
