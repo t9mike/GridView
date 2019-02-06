@@ -23,8 +23,8 @@
 
         /// <summary>
         /// Creates a Grid that centers the supplied inner_view both
-        /// horizontally and vertically within the bounds of outer_rect.
-        /// This is useful when you are not nesting inner_view in a
+        /// horizontally and vertically within the bounds of outerRect.
+        /// This is useful when you are not nesting innerView in a
         /// larger layout.
         /// </summary>
         /// <seealso cref="CreateAlignmentGrid"/>
@@ -36,19 +36,17 @@
 
         /// <summary>
         /// Creates a Grid that aligns inner_view horizontally and vertically 
-        /// as specified within the bounds of outer_rect. This is useful when 
-        /// you are not nesting inner_view in a larger layout.
+        /// as specified within the bounds of outerRect. This is useful when 
+        /// you are not nesting innerView in a larger layout.
         /// </summary>
         /// <seealso cref="CreateAutoCenterGrid"/>
-        public static Grid CreateAlignmentGrid(UIView inner_view, CGRect outer_rect,
+        public static Grid CreateAlignmentGrid(UIView innerView, CGRect outerRect,
             Layout.Alignment horizAlignment, Layout.Alignment verticalAlignment)
         {
-            var layout = new Layout()
-                + inner_view.AddStackColumn((float)outer_rect.Width).
-                    Horizontally(horizAlignment).
-                    Vertically(verticalAlignment).Tag("AlignmentGrid");
+            var layout = new Layout().WithColumns((float)outerRect.Width).WithRows((float)outerRect.Height)
+                + innerView.At(0, 0).Horizontally(horizAlignment).Vertically(verticalAlignment).Tag("AlignmentGrid");
             var grid = new Grid(layout);
-            grid.Frame = outer_rect;
+            grid.Frame = outerRect;
             return grid;
         }
 
