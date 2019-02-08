@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using CoreGraphics;
     using UIKit;
@@ -155,7 +156,7 @@
         public override void LayoutSubviews()
         {
             string debugIndent = String.Concat(Enumerable.Repeat("   ", numSuperviews(this)));
-            Console.WriteLine($"{debugIndent}LayoutSubviews {GetHashCode()}");
+            LogLine($"{debugIndent}LayoutSubviews {GetHashCode()}");
             base.LayoutSubviews();
 
             this.UpdateLayout();
@@ -164,16 +165,16 @@
             var absoluteRowHeight = this.CurrentLayout.CalculateAbsoluteRowHeight(this.Frame.Height);
             var absoluteColumnWidth = this.CurrentLayout.CalculateAbsoluteColumnWidth(this.Frame.Width);
 
-            Console.WriteLine($"{debugIndent}   RowDefinitions      = [{string.Join(",", this.CurrentLayout.RowDefinitions.Select(r => r.Size))}]");
-            Console.WriteLine($"{debugIndent}   absoluteRowHeight   = [{string.Join(",", absoluteRowHeight)}]");
-            Console.WriteLine($"{debugIndent}   ColumnDefinitions   = [{string.Join(",", this.CurrentLayout.ColumnDefinitions.Select(r => r.Size))}]");
-            Console.WriteLine($"{debugIndent}   absoluteColumnWidth = [{string.Join(",", absoluteColumnWidth)}]");
+            LogLine($"{debugIndent}   RowDefinitions      = [{string.Join(",", this.CurrentLayout.RowDefinitions.Select(r => r.Size))}]");
+            LogLine($"{debugIndent}   absoluteRowHeight   = [{string.Join(",", absoluteRowHeight)}]");
+            LogLine($"{debugIndent}   ColumnDefinitions   = [{string.Join(",", this.CurrentLayout.ColumnDefinitions.Select(r => r.Size))}]");
+            LogLine($"{debugIndent}   absoluteColumnWidth = [{string.Join(",", absoluteColumnWidth)}]");
 
             // Layout subviews
             foreach (var cell in this.CurrentLayout.Cells)
             {
-                Console.WriteLine();
-                Console.WriteLine($"{debugIndent}   Laying out tag " + cell.Position.Tag + ", " +
+                LogLine();
+                LogLine($"{debugIndent}   Laying out tag " + cell.Position.Tag + ", " +
                     cell.View.GetType());
 
                 cell.View.LayoutSubviews();
@@ -182,15 +183,15 @@
                 var cellSize = GetCellAbsoluteSize(absoluteColumnWidth, absoluteRowHeight, cell.Position);
                 var viewSize = cell.View.Frame.Size;
 
-                Console.WriteLine($"{debugIndent}      position = {position}");
-                Console.WriteLine($"{debugIndent}      cellSize = {cellSize}");
-                Console.WriteLine($"{debugIndent}      viewSize = {viewSize}");
+                LogLine($"{debugIndent}      position = {position}");
+                LogLine($"{debugIndent}      cellSize = {cellSize}");
+                LogLine($"{debugIndent}      viewSize = {viewSize}");
 
 
                 if (viewSize.Width == 0 && viewSize.Height == 0)
                 {
                     viewSize = cell.InitialSize;
-                    Console.WriteLine($"{debugIndent}      viewSize changed to cell.InitialSize = {viewSize}");
+                    LogLine($"{debugIndent}      viewSize changed to cell.InitialSize = {viewSize}");
                 }
                 bool layout = false;
 
@@ -265,16 +266,16 @@
                     cellSize = cell.View.Frame.Size;
                 }
                 var newFrame = new CGRect(position, cellSize);
-                Console.Write($"{debugIndent}      newFrame={newFrame}, cell.View.Frame={cell.View.Frame}");
+                Log($"{debugIndent}      newFrame={newFrame}, cell.View.Frame={cell.View.Frame}");
                 if (newFrame != cell.View.Frame)
                 {
-                    Console.Write(": UPDATE");
+                    Log(": UPDATE");
                     cell.View.Frame = newFrame;
                 }
-                Console.WriteLine();
+                LogLine();
             }
 
-            Console.WriteLine();
+            LogLine();
 
             if (AutoWidth && !this.CurrentLayout.ColumnDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
             {
@@ -282,13 +283,13 @@
                 nfloat max_right = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Max(c => c.View.Frame.Right);
                 nfloat newWidth = max_right - min_left;
 
-                Console.Write($"{debugIndent}   AutoWidth newWidth={newWidth}, Frame.Width={Frame.Width}");
+                Log($"{debugIndent}   AutoWidth newWidth={newWidth}, Frame.Width={Frame.Width}");
                 if (Frame.Width != newWidth)
                 {
-                    Console.Write(": UPDATE");
+                    Log(": UPDATE");
                     this.SetWidth(newWidth);
                 }
-                Console.WriteLine();
+                LogLine();
             }
 
             if (AutoHeight && !this.CurrentLayout.RowDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
@@ -297,13 +298,13 @@
                 nfloat max_bottom = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Max(c => c.View.Frame.Bottom);
                 nfloat newHeight = max_bottom - min_top;
 
-                Console.Write($"{debugIndent}   AutoHeight newHeight={newHeight}, Frame.Height={Frame.Height}");
+                Log($"{debugIndent}   AutoHeight newHeight={newHeight}, Frame.Height={Frame.Height}");
                 if (Frame.Height != newHeight)
                 {
-                    Console.Write($": UPDATE");
+                    Log($": UPDATE");
                     this.SetHeight(newHeight);
                 }
-                Console.WriteLine();
+                LogLine();
             }
 
             firstLayout = false;
@@ -312,5 +313,20 @@
 
         #endregion
 
+        [Conditional("DEBUG")]
+        internal static void Log(string msg = "")
+        {
+#if ENABLE_DEBUG_LOG
+            Console.Write(msg);
+#endif
+        }
+
+        [Conditional("DEBUG")]
+        internal static void LogLine(string msg = "")
+        {
+#if ENABLE_DEBUG_LOG
+            Console.WriteLine(msg);
+#endif
+        }
     }
 }
