@@ -55,20 +55,21 @@
 
         /// <summary>
         /// If all columns have fixed or auto sizing, then set the width
-        /// of the grid view automatically. Ignored if at least one column
-        /// has percentage width spec.
+        /// of the grid view automatically. Error if at least one column
+        /// has percentage width spec. ON by default to sync with default
+        /// col size spec of -1.
         /// </summary>
         public bool AutoWidth = true;
 
         /// <summary>
         /// If all rows have fixed or auto sizing, then set the height
-        /// of the grid view automatically. Ignored if at least one row
-        /// has percentage height spec.
+        /// of the grid view automatically. Error if at least one row
+        /// has percentage height spec. ON by default to sync with
+        /// default row size spec of -1.
         /// </summary>
         public bool AutoHeight = true;
 
         private Layout currentLayout;
-        private bool firstLayout = true;
 
         private List<Layout> layouts = new List<Layout>();
 
@@ -103,7 +104,6 @@
                         this.AddSubview(cell.View);
                     }
                 }
-                firstLayout = true;
             }
         }
 
@@ -161,6 +161,8 @@
 
             this.UpdateLayout();
 
+            if (AutoWidth && this.CurrentLayout.ColumnDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))             {                 throw new Exception("AutoWidth cannot be used when a column size spec is a percentage");             }              if (AutoHeight && this.CurrentLayout.RowDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))             {                 throw new Exception("AutoWidth cannot be used when a row size spec is a percentage");
+            } 
             // Calculating sizes
             var absoluteRowHeight = this.CurrentLayout.CalculateAbsoluteRowHeight(this.Frame.Height);
             var absoluteColumnWidth = this.CurrentLayout.CalculateAbsoluteColumnWidth(this.Frame.Width);
@@ -169,6 +171,33 @@
             LogLine($"{debugIndent}   absoluteRowHeight   = [{string.Join(",", absoluteRowHeight)}]");
             LogLine($"{debugIndent}   ColumnDefinitions   = [{string.Join(",", this.CurrentLayout.ColumnDefinitions.Select(r => r.Size))}]");
             LogLine($"{debugIndent}   absoluteColumnWidth = [{string.Join(",", absoluteColumnWidth)}]");
+
+            nfloat gridWidth;
+            nfloat gridHeight;
+
+            if (AutoWidth)
+            {
+                gridWidth = (float)absoluteColumnWidth.Sum(w => w);
+                LogLine($"{debugIndent}   AutoWidth gridWidth={gridWidth}, Frame.Width={Frame.Width}");
+            }
+            else
+            {
+                gridWidth = Frame.Width;
+            }
+
+            if (AutoHeight)
+            {
+                gridHeight = (float)absoluteRowHeight.Sum(h => h);
+                LogLine($"{debugIndent}   AutoHeight gridHeight={gridHeight}, Frame.Height={Frame.Height}");
+            }
+            else
+            {
+                gridHeight = Frame.Height;
+            }
+
+            var newGridFrame = new CGRect(Frame.Location, new CGSize(gridWidth, gridHeight));
+            LogLine($"{debugIndent}   newGridFrame={newGridFrame}, Frame={Frame}");
+            Frame = newGridFrame;
 
             // Layout subviews
             foreach (var cell in this.CurrentLayout.Cells)
@@ -187,13 +216,11 @@
                 LogLine($"{debugIndent}      cellSize = {cellSize}");
                 LogLine($"{debugIndent}      viewSize = {viewSize}");
 
-
                 if (viewSize.Width == 0 && viewSize.Height == 0)
                 {
                     viewSize = cell.InitialSize;
                     LogLine($"{debugIndent}      viewSize changed to cell.InitialSize = {viewSize}");
                 }
-                bool layout = false;
 
                 switch (cell.Position.Vertical)
                 {
@@ -207,21 +234,18 @@
                         // Ignore Margin
                         position.Y += (cellSize.Height / 2) - (viewSize.Height / 2);
                         cellSize.Height = viewSize.Height;
-                        layout = true;
                         break;
 
                     case Layout.Alignment.Start:
                         // Honor Margin.Top
                         position.Y += cell.Position.Margin.Top;
                         cellSize.Height = viewSize.Height;
-                        layout = true;
                         break;
 
                     case Layout.Alignment.End:
                         // Honor Margin.Bottom
                         position.Y += cellSize.Height - viewSize.Height - cell.Position.Margin.Bottom;
                         cellSize.Height = viewSize.Height;
-                        layout = true;
                         break;
 
                     default:
@@ -240,21 +264,18 @@
                         // Ignore Margin
                         position.X += (cellSize.Width / 2) - (viewSize.Width / 2);
                         cellSize.Width = viewSize.Width;
-                        layout = true;
                         break;
 
                     case Layout.Alignment.Start:
                         // Honor Margin.Left
                         cellSize.Width = viewSize.Width;
                         position.X += cell.Position.Margin.Left;
-                        layout = true;
                         break;
 
                     case Layout.Alignment.End:
                         // Honor Margin.Right
                         position.X += cellSize.Width - viewSize.Width - cell.Position.Margin.Right;
                         cellSize.Width = viewSize.Width;
-                        layout = true;
                         break;
 
                     default:
@@ -276,38 +297,6 @@
             }
 
             LogLine();
-
-            if (AutoWidth && !this.CurrentLayout.ColumnDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
-            {
-                nfloat min_left = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Min(c => c.View.Frame.X);
-                nfloat max_right = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Max(c => c.View.Frame.Right);
-                nfloat newWidth = max_right - min_left;
-
-                Log($"{debugIndent}   AutoWidth newWidth={newWidth}, Frame.Width={Frame.Width}");
-                if (Frame.Width != newWidth)
-                {
-                    Log(": UPDATE");
-                    this.SetWidth(newWidth);
-                }
-                LogLine();
-            }
-
-            if (AutoHeight && !this.CurrentLayout.RowDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))
-            {
-                nfloat min_top = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Min(c => c.View.Frame.Y);
-                nfloat max_bottom = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoSizeCalcs).Max(c => c.View.Frame.Bottom);
-                nfloat newHeight = max_bottom - min_top;
-
-                Log($"{debugIndent}   AutoHeight newHeight={newHeight}, Frame.Height={Frame.Height}");
-                if (Frame.Height != newHeight)
-                {
-                    Log($": UPDATE");
-                    this.SetHeight(newHeight);
-                }
-                LogLine();
-            }
-
-            firstLayout = false;
         }
 
 
