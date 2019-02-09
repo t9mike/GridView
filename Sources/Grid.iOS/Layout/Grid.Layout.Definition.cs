@@ -22,7 +22,7 @@ namespace GridView
 
 				public float Size { get; private set; }
 
-                public SizeType SizeType => Size == -1 ? SizeType.Auto : Size > 1 ? SizeType.Fixed : SizeType.Auto;
+                public SizeType SizeType => Size == -1 ? SizeType.Auto : Size > 1 ? SizeType.Fixed : SizeType.Percentage;
             }
 		}
 	}
