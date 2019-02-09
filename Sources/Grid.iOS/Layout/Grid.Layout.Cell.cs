@@ -1,11 +1,10 @@
 ﻿using UIKit;
-using System;
 
 namespace GridView
 {
-	using CoreGraphics;
+    using CoreGraphics;
 
-	public partial class Grid : UIView
+    public partial class Grid : UIView
 	{
         public partial class Layout
 		{

@@ -1,4 +1,6 @@
 ﻿using UIKit;
+using CoreGraphics;
+using HomeKit;
 
 namespace GridView
 {
@@ -57,7 +59,15 @@ namespace GridView
 
 			public IEnumerable<Cell> Cells => cells.ToArray();
 
-			public Layout Add(Cell cell)
+            /// <summary>
+            /// Finds a cell by col, row index. Retuns null if there is none.
+            /// </summary>
+            public Cell FindCell(int col, int row)
+            {
+                return this.Cells.FirstOrDefault(c => c.Position.Column == col && c.Position.Row == row);
+            }
+
+            public Layout Add(Cell cell)
 			{
 				this.cells.Add(cell);
 				return this;
@@ -65,18 +75,76 @@ namespace GridView
 
 			public Position GetPosition(UIView cell) => this.cells.First(c => c.View == cell).Position;
 
-			#endregion
+            #endregion
 
-			#region Absolute sizes
+            #region Absolute sizes
 
-			public nfloat[] CalculateAbsoluteColumnWidth(nfloat totalWidth)
+            public nfloat[] CalculateAbsoluteColumnWidth(Grid grid)
 			{
 				var absoluteColumnWidth = new nfloat[this.ColumnDefinitions.Count()];
 
-                // Calculate full width of grid
+                // Calculate full height of grid
+                nfloat totalWidth;
 
-                // Add width of fixed size columns
-                var remaining = totalWidth - this.ColumnDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
+                if (grid.AutoWidth)
+                {
+                    nfloat maxWidth = 0;
+                    bool canAutoSize = false;
+
+                    for (int row = 0; row < this.RowDefinitions.Count(); row++)
+                    {
+                        // Tracks the # of cols -- adding spans -- that have counted to the
+                        // width calc for this row. If there were 3 cols defined for the
+                        // grid and (0, 1) has ColSpan=2 and is auto sized and (0, 2) 
+                        // has absolute size spec, this value will be 3 
+                        int numGridColsCounted = 0;
+
+                        // In the example above, this value will be 1: (0,1) and (0,2) = 2.  
+                        int numCellCols = 0;
+
+                        nfloat widthForRow = 0;
+                        for (int col = 0; col < this.ColumnDefinitions.Count(); col++)
+                        {
+                            var colDef = this.ColumnDefinitions[col];
+                            var cell = FindCell(col, row);
+                            if (cell != null)
+                            {
+                                LogLine($"(col,row) -> {cell.Position}");
+                                nfloat cellWidth = colDef.SizeType == SizeType.Fixed
+                                    ? colDef.Size
+                                    : cell.View.Frame.Width;
+                                cellWidth += cell.Position.Margin.Width();
+                                widthForRow += cellWidth;
+                                numGridColsCounted += cell.Position.ColumnSpan;
+                                numCellCols += 1;
+                            }
+                        }
+
+                        if (numGridColsCounted >= this.ColumnDefinitions.Count())
+                        {
+                            canAutoSize = true;
+                            widthForRow += numCellCols * Spacing;
+                            LogLine($"AutoWidth row={row}: widthForrow={widthForRow}");
+                            maxWidth = NMath.Max(maxWidth, widthForRow);
+                        }
+                    }
+
+                    if (!canAutoSize)
+                    {
+                        // This should not be possible given algo above
+                        throw new Exception("your grid's col and cell defintions do not support AutoWidth");
+                    }
+                    totalWidth = maxWidth;
+                }
+                else
+                {
+                    totalWidth = grid.Frame.Width;
+                }
+
+                // Track available col width available for percent-based sized roiws
+                // Add width of fixed size cols
+                nfloat fixedWidth = this.ColumnDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
+                nfloat remaining = totalWidth - fixedWidth;
 
                 // Add width of auto sized columns
                 for (int column = 0; column < this.ColumnDefinitions.Count(); column++)
@@ -112,16 +180,74 @@ namespace GridView
 				return absoluteColumnWidth;
 			}
 
-			public nfloat[] CalculateAbsoluteRowHeight(nfloat totalHeight)
+			public nfloat[] CalculateAbsoluteRowHeight(Grid grid)
 			{
 				var absoluteRowHeight = new nfloat[this.RowDefinitions.Count()];
 
                 // Calculate full height of grid
+                nfloat totalHeight;
 
+                if (grid.AutoHeight)
+                {
+                    nfloat maxHeight = 0;
+                    bool canAutoSize = false; 
+
+                    for (int col = 0; col < this.ColumnDefinitions.Count(); col++)
+                    {
+                        // Tracks the # of rows -- adding spans -- that have counted to the
+                        // height calc for this colun. If there were 3 rows defined for the
+                        // grid and (0, 1) has rowSpan=2 and is auto sized and (0, 2) 
+                        // has absolute size spec, this value will be 3 
+                        int numGridRowsCounted = 0;       
+
+                        // In the example above, this value will be 1: (0,1) and (0,2) = 2.  
+                        int numCellRows = 0;
+
+                        nfloat heightForCol = 0;
+                        for (int row = 0; row < this.RowDefinitions.Count(); row++)
+                        {
+                            var rowDef = this.RowDefinitions[row];
+                            var cell = FindCell(col, row);
+                            if (cell != null)
+                            {
+                                LogLine($"(col,row) -> {cell.Position}");
+                                nfloat cellHeight = rowDef.SizeType == SizeType.Fixed
+                                    ? rowDef.Size
+                                    : cell.View.Frame.Height;
+                                cellHeight += cell.Position.Margin.Height();
+                                heightForCol += cellHeight;
+                                numGridRowsCounted += cell.Position.RowSpan;
+                                numCellRows += 1;
+                            }
+                        }
+
+                        if (numGridRowsCounted >= this.RowDefinitions.Count())
+                        {
+                            canAutoSize = true;
+                            heightForCol += numCellRows * Spacing;
+                            LogLine($"AutoHeight col={col}: heightForCol={heightForCol}");
+                            maxHeight = NMath.Max(maxHeight, heightForCol);
+                        }
+                    }
+
+                    if (!canAutoSize)
+                    {
+                        // This should not be possible given algo above
+                        throw new Exception("your grid's row and cell defintions do not support AutoHeight");
+                    }
+                    totalHeight = maxHeight;
+                }
+                else
+                {
+                    totalHeight = grid.Frame.Height;
+                }
+
+                // Track available row height available for percent-based sized roiws
                 // Add height of fixed size rows
-                var remaining = totalHeight - this.RowDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
+                nfloat fixedHeight = this.RowDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
+                nfloat remaining = totalHeight - fixedHeight;
 
-                // Add height of auto sized rows
+                // Define height of auto sized rows
                 for (int row = 0; row < this.RowDefinitions.Count(); row++)
                 {
                     var definition = this.RowDefinitions.ElementAt(row);
@@ -142,6 +268,7 @@ namespace GridView
 
 				remaining = (nfloat)Math.Max(0, remaining);
 
+                // Define size of fixed and pct sized rows
 				for (int row = 0; row < this.RowDefinitions.Count(); row++)
 				{
 					var definition = this.RowDefinitions.ElementAt(row);

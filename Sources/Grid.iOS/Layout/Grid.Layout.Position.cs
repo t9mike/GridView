@@ -64,6 +64,11 @@ namespace GridView
                 // Temporary to support stack creation fluent interface
                 internal StackType StackType;
                 internal CGSize StackCellSize;
+
+                public override string ToString()
+                {
+                    return $"Col={Column}-{ColumnSpan} Row={Row}-{RowSpan}";
+                }
             }
         }
 	}

@@ -2,6 +2,43 @@
 
 A Xamarin grid helper layout that uses C# operator override. 
 
+# About this Fork
+
+The fork by t9mike adds: TODO
+
+Bugs are likely mine. Please don't blame aloisdeniel. I am so grateful that he published his well thought out and  wonderful work. Grids and stacks are so much easier to layout a UI with than iOS constraint-based approach. Thank you aloisdeniel!
+
+I plan to add more samples showing my new features once I am farther along with using GridView for my project.
+
+The auto grid sizing algorithm when there are % sized rows or columns is very crude. The size of the view in the %-based cell is used to define the overall size for the row or column. For example, if a grid spec was:
+
+```csharp
+var time = Make_Box(100, 50, UIColor.Blue); // 100w x 50h
+var p = Make_Box(50, 15, UIColor.Yellow);   // 50w x 15h
+var m = Make_Box(50, 15, UIColor.Red);      // 50w x 15h
+
+var layout = new Grid.Layout()
+   .WithRows(0.5f, 0.5f)
+   .WithColumns(-1, -1)
+   + time.At(0, 0).RowSpan(2)
+   + p.At(0, 1).Vertically(Layout.Alignment.Start)
+   + m.At(1, 1).Vertically(Layout.Alignment.End);
+```
+
+This is a grid like:
+
+```
++----------+-----+
+|          |  p  |
+|   time   +-----+
+|          |  m  |
++----------+-----+
+```
+
+Then we could summize that the grid height should be 50 based on the 100wx50h. And that is achieved because the p and m cells only have 15 high height. But if they were instead each 30 high, the simple grid sizer algorithm in TODO would set the grid height to 60, when it should *probably* keep it 50.
+
+WPF grid reference code for [Grid](https://referencesource.microsoft.com/#PresentationFramework/src/Framework/System/Windows/Controls/Grid.cs,ba9bb2f5c04e024f,references) would be a good start to a new sizing algo. See MeasureOverride().
+
 ## Getting started
 
 Let's start with a common example with a simple layout that changes while in landscape.
@@ -17,29 +54,29 @@ var cyan = new UIView { BackgroundColor = UIColor.Cyan };
 var yellow = new UIView { BackgroundColor = UIColor.Yellow };
 
 var portrait = new Grid.Layout() 
-					 { 
-						Spacing = 10, 
-						Padding = new Grid.Insets(10) 
-					 }
-					 .WithRows(0.75f, 0.25f, 200f)
-					 .WithColumns(0.75f, 0.25f)
-					 + red.At(0, 0).Span(2, 1) 
-				  	 + blue.At(2, 0).Span(1, 2) 
-					 + cyan.At(0, 1) 
-					 + yellow.At(1,1);
+                     { 
+                        Spacing = 10, 
+                        Padding = new Grid.Insets(10) 
+                     }
+                     .WithRows(0.75f, 0.25f, 200f)
+                     .WithColumns(0.75f, 0.25f)
+                     + red.At(0, 0).Span(2, 1) 
+                       + blue.At(2, 0).Span(1, 2) 
+                     + cyan.At(0, 1) 
+                     + yellow.At(1,1);
 
 var landscape = new Grid.Layout() 
-					 { 
-					 	Spacing = 20, 
-						Padding = new Grid.Insets(20), 
-					 }
-					 .WithRows(1.00f)
-					 .WithColumns(0.50f, 0.25f, 0.25f)
-					 + red.At(0, 0)
-					 + blue.At(0, 1)
-					       .Vertically(Grid.Layout.Alignment.End)
-					       .Horizontally(Grid.Layout.Alignment.Center)
-					 + cyan.At(0, 2);
+                     { 
+                         Spacing = 20, 
+                        Padding = new Grid.Insets(20), 
+                     }
+                     .WithRows(1.00f)
+                     .WithColumns(0.50f, 0.25f, 0.25f)
+                     + red.At(0, 0)
+                     + blue.At(0, 1)
+                           .Vertically(Grid.Layout.Alignment.End)
+                           .Horizontally(Grid.Layout.Alignment.Center)
+                     + cyan.At(0, 2);
 
 var grid = new Grid();
 
@@ -177,8 +214,7 @@ You might be wondering why I'm doing this while there's already existing layout 
 
 ## Roadmap
 
-- [X] iOS Implementation
-- [ ] Android Implementation
+- [ ] - [ ] Android Implementation
 - [ ] Optimize and benchmarking
 
 ## Contributions

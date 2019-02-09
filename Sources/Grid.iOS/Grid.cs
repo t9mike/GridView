@@ -54,18 +54,16 @@
         #region Layout
 
         /// <summary>
-        /// If all columns have fixed or auto sizing, then set the width
-        /// of the grid view automatically. Error if at least one column
-        /// has percentage width spec. ON by default to sync with default
-        /// col size spec of -1.
+        /// Sets width automatically. Note that if a column uses % sizing,
+        /// the size of the cell will define a minimum width for the cell
+        /// when AutoWidth is true (crude sizing algorithm).
         /// </summary>
         public bool AutoWidth = true;
 
         /// <summary>
-        /// If all rows have fixed or auto sizing, then set the height
-        /// of the grid view automatically. Error if at least one row
-        /// has percentage height spec. ON by default to sync with
-        /// default row size spec of -1.
+        /// Sets height automatically. Note that if a row uses % sizing,
+        /// the size of the cell will define a minimum height for the cell
+        /// when AutoHeight is true (crude sizing algorithm).
         /// </summary>
         public bool AutoHeight = true;
 
@@ -161,11 +159,9 @@
 
             this.UpdateLayout();
 
-            if (AutoWidth && this.CurrentLayout.ColumnDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))             {                 throw new Exception("AutoWidth cannot be used when a column size spec is a percentage");             }              if (AutoHeight && this.CurrentLayout.RowDefinitions.Any(c => c.SizeType == Layout.SizeType.Percentage))             {                 throw new Exception("AutoWidth cannot be used when a row size spec is a percentage");
-            } 
             // Calculating sizes
-            var absoluteRowHeight = this.CurrentLayout.CalculateAbsoluteRowHeight(this.Frame.Height);
-            var absoluteColumnWidth = this.CurrentLayout.CalculateAbsoluteColumnWidth(this.Frame.Width);
+            var absoluteRowHeight = this.CurrentLayout.CalculateAbsoluteRowHeight(this);
+            var absoluteColumnWidth = this.CurrentLayout.CalculateAbsoluteColumnWidth(this);
 
             LogLine($"{debugIndent}   RowDefinitions      = [{string.Join(",", this.CurrentLayout.RowDefinitions.Select(r => r.Size))}]");
             LogLine($"{debugIndent}   absoluteRowHeight   = [{string.Join(",", absoluteRowHeight)}]");
