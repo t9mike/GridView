@@ -7,13 +7,20 @@ namespace GridView
 	using System.Linq;
 
 	public partial class Grid : UIView
-	{
+	{   
 		public partial class Layout
 		{
             #region Margins
 
+            /// <summary>
+            /// This is global offset of all cells from the grid's outer frame.
+            /// </summary>
             public Insets Padding { get; set; }
 
+            /// <summary>
+            /// This is the offset between each column and row. There is no
+            /// offset between the first/last column/row: only between.
+            /// </summary>
 			public float Spacing { get; set; }
 
 			#endregion
@@ -66,10 +73,12 @@ namespace GridView
 			{
 				var absoluteColumnWidth = new nfloat[this.ColumnDefinitions.Count()];
 
+                // Calculate full width of grid
+
+                // Add width of fixed size columns
                 var remaining = totalWidth - this.ColumnDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
 
-                // Determine size of auto sized columns; only columns with colspan=1
-                // will be considered
+                // Add width of auto sized columns
                 for (int column = 0; column < this.ColumnDefinitions.Count(); column++)
                 {
                     var definition = this.ColumnDefinitions.ElementAt(column);
@@ -85,8 +94,10 @@ namespace GridView
                     }
                 }
 
+                // Add size of padding and spacing
 				remaining -= this.Padding.Left + this.Padding.Right;
 				remaining -= (this.ColumnDefinitions.Count() - 1) * this.Spacing;
+
 				remaining = (nfloat)Math.Max(0, remaining);
 
 				for (int column = 0; column < this.ColumnDefinitions.Count(); column++)
@@ -105,10 +116,12 @@ namespace GridView
 			{
 				var absoluteRowHeight = new nfloat[this.RowDefinitions.Count()];
 
-				var remaining = totalHeight - this.RowDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
+                // Calculate full height of grid
 
-                // Determine size of auto sized rows; only rows with rowspan=1
-                // will be considered
+                // Add height of fixed size rows
+                var remaining = totalHeight - this.RowDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
+
+                // Add height of auto sized rows
                 for (int row = 0; row < this.RowDefinitions.Count(); row++)
                 {
                     var definition = this.RowDefinitions.ElementAt(row);
@@ -123,8 +136,10 @@ namespace GridView
                     }
                 }
 
+                // Add size of padding and spacing
                 remaining -= this.Padding.Top + this.Padding.Bottom;
 				remaining -= (this.RowDefinitions.Count() - 1) * this.Spacing;
+
 				remaining = (nfloat)Math.Max(0, remaining);
 
 				for (int row = 0; row < this.RowDefinitions.Count(); row++)
