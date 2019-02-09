@@ -222,6 +222,8 @@
                     LogLine($"{debugIndent}      viewSize changed to cell.InitialSize = {viewSize}");
                 }
 
+                LogLine($"{debugIndent}      Alignment: Vertical={cell.Position.Vertical}, Horizontal={cell.Position.Horizontal}");
+
                 switch (cell.Position.Vertical)
                 {
                     case Layout.Alignment.Stretched:
