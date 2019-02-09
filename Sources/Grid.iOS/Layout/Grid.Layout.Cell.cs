@@ -7,13 +7,6 @@ namespace GridView
 
 	public partial class Grid : UIView
 	{
-        internal enum StackType
-        {
-            None,
-            Vertical,
-            Horizontal
-        }
-
         public partial class Layout
 		{
 			public class Cell
