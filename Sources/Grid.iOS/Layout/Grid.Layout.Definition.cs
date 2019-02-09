@@ -6,13 +6,6 @@ namespace GridView
 	{
 		public partial class Layout
 		{
-            public enum SizeType
-            {
-                Auto,
-                Percentage,
-                Fixed
-            }
-
             public struct Definition
 			{
 				public Definition(float size)

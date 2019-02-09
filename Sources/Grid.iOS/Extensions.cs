@@ -18,6 +18,38 @@ namespace GridView
 
 		public static Grid.Layout.Cell Horizontally(this Grid.Layout.Cell cell, Grid.Layout.Alignment alignment) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { Horizontal = alignment });
 
+        /// <summary>
+        /// This is an alternative to using Vertically() and/or Horizontally() to set
+        /// alignment. It sets one of both directions to Stretched.
+        /// </summary>
+        public static Grid.Layout.Cell AlignStretch(this Grid.Layout.Cell cell, 
+            Grid.Layout.Direction direction = Grid.Layout.Direction.Both) => 
+            Align(cell, Grid.Layout.Alignment.Stretched, direction);
+
+        /// <summary>
+        /// This is an alternative to using Vertically() and/or Horizontally() to set
+        /// alignment. It sets one of both directions to Centered.
+        /// </summary>
+        public static Grid.Layout.Cell AlignCenter(this Grid.Layout.Cell cell,
+            Grid.Layout.Direction direction = Grid.Layout.Direction.Both) =>
+            Align(cell, Grid.Layout.Alignment.Center, direction);
+
+        /// <summary>
+        /// This is an alternative to using Vertically() and/or Horizontally() to set
+        /// alignment. It sets one of both directions to Start.
+        /// </summary>
+        public static Grid.Layout.Cell AlignStart(this Grid.Layout.Cell cell,
+            Grid.Layout.Direction direction = Grid.Layout.Direction.Both) =>
+            Align(cell, Grid.Layout.Alignment.Start, direction);
+
+        /// <summary>
+        /// This is an alternative to using Vertically() and/or Horizontally() to set
+        /// alignment. It sets one of both directions to Start.
+        /// </summary>
+        public static Grid.Layout.Cell AlignEnd(this Grid.Layout.Cell cell,
+            Grid.Layout.Direction direction = Grid.Layout.Direction.Both) =>
+            Align(cell, Grid.Layout.Alignment.End, direction);
+
         public static Grid.Layout.Cell CollapseHidden(this Grid.Layout.Cell cell, bool collapseHidden) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { CollapseHidden = collapseHidden });
 
         /// <summary>
@@ -31,7 +63,7 @@ namespace GridView
             // Row,Column is updated via + operator (when added to layout)
             return new Grid.Layout.Cell(view, new Grid.Layout.Position(0, 0)
             { 
-                StackType = Grid.StackType.Horizontal,
+                StackType = Grid.Layout.StackType.Horizontal,
                 StackCellSize = new CGSize(width, height)
             });
         }
@@ -47,7 +79,7 @@ namespace GridView
             // Row,Column is updated via + operator (when added to layout)
             return new Grid.Layout.Cell(view, new Grid.Layout.Position(0, 0)
             { 
-                StackType = Grid.StackType.Vertical,
+                StackType = Grid.Layout.StackType.Vertical,
                 StackCellSize = new CGSize(width, height)
             });
         }
@@ -127,6 +159,20 @@ namespace GridView
         internal static void SetHeight(this UIView view, nfloat height)
         {
             view.Frame = new CGRect(view.Frame.X, view.Frame.Y, view.Frame.Width, height);
+        }
+
+        internal static Grid.Layout.Cell Align(Grid.Layout.Cell cell, Grid.Layout.Alignment alignment,
+            Grid.Layout.Direction direction)
+        {
+            if (direction.HasFlag(Grid.Layout.Direction.Horizontal))
+            {
+                cell = cell.Horizontally(alignment);
+            }
+            if (direction.HasFlag(Grid.Layout.Direction.Vertical))
+            {
+                cell = cell.Vertically(alignment);
+            }
+            return cell;
         }
     }
 }

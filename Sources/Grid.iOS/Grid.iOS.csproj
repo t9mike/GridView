@@ -6,7 +6,7 @@
     <ProjectGuid>{DDEDF9BA-7F3C-4FDC-BE40-3522C534679D}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>Grid.iOS</RootNamespace>
+    <RootNamespace>GridView</RootNamespace>
     <AssemblyName>Grid.iOS</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>__IOS__;__MOBILE__;__UNIFIED__;DEBUG;xENABLE_DEBUG_LOG</DefineConstants>
+    <DefineConstants>__IOS__;__MOBILE__;__UNIFIED__;DEBUG;ENABLE_DEBUG_LOG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodesignKey>iPhone Developer</CodesignKey>
@@ -51,8 +51,8 @@
     <Compile Include="Layout\Grid.Layout.Definition.cs" />
     <Compile Include="Layout\Grid.Layout.Position.cs" />
     <Compile Include="Layout\Grid.Layout.cs" />
-    <Compile Include="Layout\Grid.Layout.Alignment.cs" />
     <Compile Include="Grid.Insets.cs" />
+    <Compile Include="Layout\Grid.Layout.Enums.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
