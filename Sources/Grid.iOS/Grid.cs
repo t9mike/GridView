@@ -111,20 +111,56 @@
             this.layouts.Add(layout);
         }
 
-        private CGPoint GetCellAbsolutePosition(nfloat[] absoluteColumnWidth, nfloat[] absoluteRowHeight, Layout.Position pos)
+        /// <summary>
+        /// Calculate position of all cells, Returns two-dimensional array [col,row].
+        /// </summary>
+        private CGPoint[,] CalcCellAbsolutePositions(nfloat[] absoluteColumnWidth, nfloat[] absoluteRowHeight)
         {
-            var position = new CGPoint(pos.Column * this.CurrentLayout.Spacing, pos.Row * this.CurrentLayout.Spacing);
+            var pos = new CGPoint[absoluteColumnWidth.Count(), absoluteRowHeight.Count()];
 
-            position.X += this.CurrentLayout.Padding.Left;
-            position.Y += this.CurrentLayout.Padding.Top;
+            nfloat y = this.CurrentLayout.Padding.Top;
+            bool firstRealRow = true;
 
-            for (int i = 0; i < pos.Column; i++)
-                position.X += absoluteColumnWidth[i];
+            for (int row = 0; row < absoluteRowHeight.Count(); row++)
+            {
+                nfloat height = absoluteRowHeight[row];
+                if (height > 0)
+                {
+                    if (firstRealRow)
+                    {
+                        firstRealRow = false;
+                    }
+                    else
+                    {
+                        y += this.CurrentLayout.Spacing;
+                    }
 
-            for (int i = 0; i < pos.Row; i++)
-                position.Y += absoluteRowHeight[i];
+                    nfloat x = this.CurrentLayout.Padding.Left;
+                    bool firstRealCol = true;
 
-            return position;
+                    for (int col = 0; col < absoluteColumnWidth.Count(); col++)
+                    {
+                        nfloat width = absoluteColumnWidth[col];
+                        if (width > 0)
+                        {
+                            if (firstRealCol)
+                            {
+                                firstRealCol = false;
+                            }
+                            else
+                            {
+                                x += this.CurrentLayout.Spacing;
+                            }
+                            pos[col, row] = new CGPoint(x, y);
+                            x += width;
+                        }
+                    }
+
+                    y += height;
+                }
+            }
+
+            return pos;
         }
 
         private CGSize GetCellAbsoluteSize(nfloat[] absoluteColumnWidth, nfloat[] absoluteRowHeight, Layout.Position pos)
@@ -159,41 +195,29 @@
 
             this.UpdateLayout();
 
-            // Calculating sizes
-            var absoluteRowHeight = this.CurrentLayout.CalculateAbsoluteRowHeight(this);
-            var absoluteColumnWidth = this.CurrentLayout.CalculateAbsoluteColumnWidth(this);
+            // Calculate row sizes
+            var heights = this.CurrentLayout.CalculateAbsoluteRowHeight(this);
+            nfloat gridHeight = heights.Item1;
+            nfloat[] absoluteRowHeight = heights.Item2;
+            LogLine($"{debugIndent}   AutoHeight={AutoHeight}, gridHeight={gridHeight}, Frame.Height={Frame.Height}");
+
+            // Calculate column sizes
+            var widths = this.CurrentLayout.CalculateAbsoluteColumnWidth(this);
+            nfloat gridWidth = widths.Item1;
+            nfloat[] absoluteColumnWidth = widths.Item2;
+            LogLine($"{debugIndent}   AutoWidth={AutoWidth} gridWidth={gridWidth}, Frame.Width={Frame.Width}");
+
+            var newGridFrame = new CGRect(Frame.Location, new CGSize(gridWidth, gridHeight));
+            LogLine($"{debugIndent}   newGridFrame={newGridFrame}, Frame={Frame}");
+            Frame = newGridFrame;
 
             LogLine($"{debugIndent}   RowDefinitions      = [{string.Join(",", this.CurrentLayout.RowDefinitions.Select(r => r.Size))}]");
             LogLine($"{debugIndent}   absoluteRowHeight   = [{string.Join(",", absoluteRowHeight)}]");
             LogLine($"{debugIndent}   ColumnDefinitions   = [{string.Join(",", this.CurrentLayout.ColumnDefinitions.Select(r => r.Size))}]");
             LogLine($"{debugIndent}   absoluteColumnWidth = [{string.Join(",", absoluteColumnWidth)}]");
 
-            nfloat gridWidth;
-            nfloat gridHeight;
-
-            if (AutoWidth)
-            {
-                gridWidth = (float)absoluteColumnWidth.Sum(w => w);
-                LogLine($"{debugIndent}   AutoWidth gridWidth={gridWidth}, Frame.Width={Frame.Width}");
-            }
-            else
-            {
-                gridWidth = Frame.Width;
-            }
-
-            if (AutoHeight)
-            {
-                gridHeight = (float)absoluteRowHeight.Sum(h => h);
-                LogLine($"{debugIndent}   AutoHeight gridHeight={gridHeight}, Frame.Height={Frame.Height}");
-            }
-            else
-            {
-                gridHeight = Frame.Height;
-            }
-
-            var newGridFrame = new CGRect(Frame.Location, new CGSize(gridWidth, gridHeight));
-            LogLine($"{debugIndent}   newGridFrame={newGridFrame}, Frame={Frame}");
-            Frame = newGridFrame;
+            // Calculate cell positions
+            var positions = CalcCellAbsolutePositions(absoluteColumnWidth, absoluteRowHeight);
 
             // Layout subviews
             foreach (var cell in this.CurrentLayout.Cells)
@@ -202,9 +226,15 @@
                 LogLine($"{debugIndent}   Laying out tag " + cell.Position.Tag + ", " +
                     cell.View.GetType());
 
+                if (!cell.IncludeInAutoSizeCalcs)
+                {
+                    LogLine($"{debugIndent}      skipping: View.Hidden=true and CollapseHidden=true");
+                    continue;
+                }
+
                 cell.View.LayoutSubviews();
 
-                var position = GetCellAbsolutePosition(absoluteColumnWidth, absoluteRowHeight, cell.Position);
+                var position = positions[cell.Position.Column, cell.Position.Row];
                 var cellSize = GetCellAbsoluteSize(absoluteColumnWidth, absoluteRowHeight, cell.Position);
                 var viewSize = cell.View.Frame.Size;
 

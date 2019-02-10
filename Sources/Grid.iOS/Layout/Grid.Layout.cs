@@ -79,7 +79,10 @@ namespace GridView
 
             #region Absolute sizes
 
-            public nfloat[] CalculateAbsoluteColumnWidth(Grid grid)
+            /// <summary>
+            /// Calculates grid width and individual column widths.
+            /// </summary>
+            public Tuple<nfloat, nfloat[]> CalculateAbsoluteColumnWidth(Grid grid)
 			{
 				var absoluteColumnWidth = new nfloat[this.ColumnDefinitions.Count()];
 
@@ -88,6 +91,8 @@ namespace GridView
 
                 if (grid.AutoWidth)
                 {
+                    LogLine($"CalculateAbsoluteRowHeight AutoWidth");
+
                     nfloat maxWidth = 0;
                     bool canAutoSize = false;
 
@@ -107,12 +112,12 @@ namespace GridView
                         {
                             var colDef = this.ColumnDefinitions[col];
                             var cell = FindCell(col, row);
-                            if (cell != null)
+                            if (cell?.IncludeInAutoSizeCalcs == true)
                             {
-                                LogLine($"(col,row) -> {cell.Position}");
                                 nfloat cellWidth = colDef.SizeType == SizeType.Fixed
                                     ? colDef.Size
                                     : cell.View.Frame.Width;
+                                LogLine($"{   cell.Position} cellWidth={cellWidth}");
                                 cellWidth += cell.Position.Margin.Width();
                                 widthForRow += cellWidth;
                                 numGridColsCounted += cell.Position.ColumnSpan;
@@ -123,8 +128,8 @@ namespace GridView
                         if (numGridColsCounted >= this.ColumnDefinitions.Count())
                         {
                             canAutoSize = true;
-                            widthForRow += numCellCols * Spacing;
-                            LogLine($"AutoWidth row={row}: widthForrow={widthForRow}");
+                            widthForRow += (numCellCols - 1) * Spacing;
+                            LogLine($"   row={row}: widthForrow={widthForRow}");
                             maxWidth = NMath.Max(maxWidth, widthForRow);
                         }
                     }
@@ -177,10 +182,13 @@ namespace GridView
                     }
                 }
 
-				return absoluteColumnWidth;
+                return new Tuple<nfloat, nfloat[]>(totalWidth, absoluteColumnWidth);
 			}
 
-			public nfloat[] CalculateAbsoluteRowHeight(Grid grid)
+            /// <summary>
+            /// Calculates grid height and individual row heights.
+            /// </summary>
+			public Tuple<nfloat,nfloat[]> CalculateAbsoluteRowHeight(Grid grid)
 			{
 				var absoluteRowHeight = new nfloat[this.RowDefinitions.Count()];
 
@@ -189,8 +197,8 @@ namespace GridView
 
                 if (grid.AutoHeight)
                 {
+                    LogLine($"CalculateAbsoluteRowHeight AutoHeight");
                     nfloat maxHeight = 0;
-                    bool canAutoSize = false; 
 
                     for (int col = 0; col < this.ColumnDefinitions.Count(); col++)
                     {
@@ -208,33 +216,24 @@ namespace GridView
                         {
                             var rowDef = this.RowDefinitions[row];
                             var cell = FindCell(col, row);
-                            if (cell != null)
+                            if (cell?.IncludeInAutoSizeCalcs == true)
                             {
-                                LogLine($"(col,row) -> {cell.Position}");
                                 nfloat cellHeight = rowDef.SizeType == SizeType.Fixed
                                     ? rowDef.Size
                                     : cell.View.Frame.Height;
                                 cellHeight += cell.Position.Margin.Height();
+                                LogLine($"   {cell.Position} cellHeight={cellHeight}");
                                 heightForCol += cellHeight;
                                 numGridRowsCounted += cell.Position.RowSpan;
                                 numCellRows += 1;
                             }
                         }
 
-                        if (numGridRowsCounted >= this.RowDefinitions.Count())
-                        {
-                            canAutoSize = true;
-                            heightForCol += numCellRows * Spacing;
-                            LogLine($"AutoHeight col={col}: heightForCol={heightForCol}");
-                            maxHeight = NMath.Max(maxHeight, heightForCol);
-                        }
+                        heightForCol += (numCellRows - 1) * Spacing;
+                        LogLine($"   col={col}: heightForCol={heightForCol}");
+                        maxHeight = NMath.Max(maxHeight, heightForCol);
                     }
 
-                    if (!canAutoSize)
-                    {
-                        // This should not be possible given algo above
-                        throw new Exception("your grid's row and cell defintions do not support AutoHeight");
-                    }
                     totalHeight = maxHeight;
                 }
                 else
@@ -278,7 +277,7 @@ namespace GridView
                     }
                 }
 
-				return absoluteRowHeight;
+                return new Tuple<nfloat, nfloat[]>(totalHeight, absoluteRowHeight);
 			}
 
 			#endregion
