@@ -4,23 +4,22 @@ using UIKit;
 using GridView;
 using CoreGraphics;
 
-namespace Grid.Sample.iOS
+namespace GridViewSample.Samples
 {
-	public partial class ViewController : UIViewController
+	public partial class SampleViewController1 : BaseViewController
 	{
-		protected ViewController(IntPtr handle) : base(handle)
+		public SampleViewController1()
 		{
-			// Note: this .ctor should not contain any initialization logic.
 		}
 
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad(); 
 
-			var red = new UIView { BackgroundColor = UIColor.Red };
-			var blue = new UIView { BackgroundColor = UIColor.Blue, Frame = new CoreGraphics.CGRect(0,0,50,50) };
-			var cyan = new UIView { BackgroundColor = UIColor.Cyan };
-			var yellow = new UIView { BackgroundColor = UIColor.Yellow };
+			var red = Make_Box(UIColor.Red);
+			var blue = Make_Box(UIColor.Blue, 50,50);
+			var cyan = Make_Box(UIColor.Cyan);
+			var yellow = Make_Box(UIColor.Yellow);
 
 			var portrait = new GridView.Grid.Layout() 
 									 { 
@@ -48,19 +47,14 @@ namespace Grid.Sample.iOS
             var grid = new GridView.Grid()
             {
                 AutoWidth = false,
-                AutoHeight = false
+                AutoHeight = false,
+                BackgroundColor = UIColor.White
             };
 
             grid.AddLayout(portrait);
-			//grid.AddLayout(landscape, (g) => (g.Frame.Width > g.Frame.Height));
+			grid.AddLayout(landscape, (g) => (g.Frame.Width > g.Frame.Height));
 
 			this.View = grid;
-		}
-
-		public override void DidReceiveMemoryWarning()
-		{
-			base.DidReceiveMemoryWarning();
-			// Release any cached data, images, etc that aren't in use.
 		}
 	}
 }

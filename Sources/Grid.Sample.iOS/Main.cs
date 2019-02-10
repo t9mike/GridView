@@ -1,6 +1,6 @@
 ﻿using UIKit;
 
-namespace Grid.Sample.iOS
+namespace GridViewSample
 {
 	public class Application
 	{

@@ -1,7 +1,8 @@
 ﻿using Foundation;
+using GridViewSample.Samples;
 using UIKit;
 
-namespace Grid.Sample.iOS
+namespace GridViewSample
 {
 	// The UIApplicationDelegate for the application. This class is responsible for launching the
 	// User Interface of the application, as well as listening (and optionally responding) to application events from iOS.
@@ -18,10 +19,16 @@ namespace Grid.Sample.iOS
 
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
-			// Override point for customization after application launch.
-			// If not required for your application you can safely delete this method
+            // Override point for customization after application launch.
+            // If not required for your application you can safely delete this method
 
-			return true;
+            // TODO: make a proper sample launcher that shows all samples and loads selected sample view controller
+            //Window.RootViewController = new SampleViewController1();
+            //Window.RootViewController = new SampleViewController2();
+            Window.RootViewController = new SampleViewController3();
+            Window.MakeKeyAndVisible();
+
+            return true;
 		}
 
 		public override void OnResignActivation(UIApplication application)
