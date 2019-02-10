@@ -94,7 +94,6 @@ namespace GridView
                     LogLine($"CalculateAbsoluteRowHeight AutoWidth");
 
                     nfloat maxWidth = 0;
-                    bool canAutoSize = false;
 
                     for (int row = 0; row < this.RowDefinitions.Count(); row++)
                     {
@@ -125,20 +124,11 @@ namespace GridView
                             }
                         }
 
-                        if (numGridColsCounted >= this.ColumnDefinitions.Count())
-                        {
-                            canAutoSize = true;
-                            widthForRow += (numCellCols - 1) * Spacing;
-                            LogLine($"   row={row}: widthForrow={widthForRow}");
-                            maxWidth = NMath.Max(maxWidth, widthForRow);
-                        }
+                        widthForRow += (numCellCols - 1) * Spacing;
+                        LogLine($"   row={row}: widthForrow={widthForRow}");
+                        maxWidth = NMath.Max(maxWidth, widthForRow);
                     }
 
-                    if (!canAutoSize)
-                    {
-                        // This should not be possible given algo above
-                        throw new Exception("your grid's col and cell defintions do not support AutoWidth");
-                    }
                     totalWidth = maxWidth;
                 }
                 else
