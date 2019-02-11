@@ -28,6 +28,11 @@ namespace GridView
                 /// size spec is -1 or when AutoWidth or AutoHeight is true.
                 /// </summary>
                 public bool IncludeInAutoSizeCalcs => View.Hidden == false || Position.CollapseHidden == false;
+
+                public override string ToString()
+                {
+                    return $"Position={Position}: View.Frame={View?.Frame} View.Hidden={View?.Hidden}";
+                }
             }
 		}
 	}

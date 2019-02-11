@@ -18,7 +18,7 @@ namespace GridViewSample.Samples
 
             var layout = new Grid.Layout()
                 + box1.AddStackRow()
-                + box2.AddStackRow() //.MarginTop(10)
+                + box2.AddStackRow().MarginTop(60).MarginLeft(20).MarginBottom(40)
                 + box3.AddStackRow()
                 + box4.AddStackRow()
             ;

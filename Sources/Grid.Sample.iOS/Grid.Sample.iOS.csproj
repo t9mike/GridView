@@ -67,7 +67,6 @@
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <MtouchI18n></MtouchI18n>
-    <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -117,6 +116,8 @@
     <Compile Include="Samples\SampleViewController3.cs" />
     <Compile Include="Samples\SampleViewController1.cs" />
     <Compile Include="Samples\BaseViewController.cs" />
+    <Compile Include="Samples\SampleViewController4.cs" />
+    <Compile Include="Samples\SampleViewController5.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Grid.iOS\Grid.iOS.csproj">

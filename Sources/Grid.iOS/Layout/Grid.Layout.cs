@@ -67,6 +67,30 @@ namespace GridView
                 return this.Cells.FirstOrDefault(c => c.Position.Column == col && c.Position.Row == row);
             }
 
+            /// <summary>
+            /// Finds a cell by col, row index, but will allow col to be anywhere 
+            /// within the colspan for the cell. Retuns null if there is none.
+            /// </summary>
+            public Cell FindCellWithColspan(int col, int row)
+            {
+                return this.Cells.FirstOrDefault(c =>
+                    (col >= c.Position.Column && col < c.Position.Column + c.Position.ColumnSpan) &&
+                    (c.Position.Row == row)
+                    );
+            }
+
+            /// <summary>
+            /// Finds a cell by col, row index, but will allow row to be anywhere 
+            /// within the rowspan for the cell. Retuns null if there is none.
+            /// </summary>
+            public Cell FindCellWithRowspan(int col, int row)
+            {
+                return this.Cells.FirstOrDefault(c =>
+                    (c.Position.Column == col) &&
+                    (row >= c.Position.Row && row < c.Position.Row + c.Position.RowSpan)
+                    );
+            }
+
             public Layout Add(Cell cell)
 			{
 				this.cells.Add(cell);
@@ -84,52 +108,95 @@ namespace GridView
             /// </summary>
             public Tuple<nfloat, nfloat[]> CalculateAbsoluteColumnWidth(Grid grid)
 			{
-				var absoluteColumnWidth = new nfloat[this.ColumnDefinitions.Count()];
+                bool debug = grid.GetType().ToString().Contains("LunarTimesGridView");
+                var absoluteColumnWidth = new nfloat[this.ColumnDefinitions.Count()];
 
                 // Calculate full height of grid
                 nfloat totalWidth;
 
+                var minColWidth = new nfloat[this.ColumnDefinitions.Count()];
+
                 if (grid.AutoWidth)
                 {
-                    LogLine($"CalculateAbsoluteRowHeight AutoWidth");
+                    LogLine($"CalculateAbsoluteColumnWidth AutoWidth");
 
-                    nfloat maxWidth = 0;
+                    var maxColWidth = new nfloat[this.ColumnDefinitions.Count()]; 
+                    int maxColSpan = grid.CurrentLayout.cells.Max(c => c.Position.ColumnSpan);
 
-                    for (int row = 0; row < this.RowDefinitions.Count(); row++)
+                    for (int colSpan = 1; colSpan <= maxColSpan; colSpan++)
                     {
-                        // Tracks the # of cols -- adding spans -- that have counted to the
-                        // width calc for this row. If there were 3 cols defined for the
-                        // grid and (0, 1) has ColSpan=2 and is auto sized and (0, 2) 
-                        // has absolute size spec, this value will be 3 
-                        int numGridColsCounted = 0;
-
-                        // In the example above, this value will be 1: (0,1) and (0,2) = 2.  
-                        int numCellCols = 0;
-
-                        nfloat widthForRow = 0;
-                        for (int col = 0; col < this.ColumnDefinitions.Count(); col++)
+                        for (int row = 0; row < this.RowDefinitions.Count(); row++)
                         {
-                            var colDef = this.ColumnDefinitions[col];
-                            var cell = FindCell(col, row);
-                            if (cell?.IncludeInAutoSizeCalcs == true)
+                            for (int col = 0; col < this.ColumnDefinitions.Count(); col++)
                             {
-                                nfloat cellWidth = colDef.SizeType == SizeType.Fixed
-                                    ? colDef.Size
-                                    : cell.View.Frame.Width;
-                                LogLine($"{   cell.Position} cellWidth={cellWidth}");
-                                cellWidth += cell.Position.Margin.Width();
-                                widthForRow += cellWidth;
-                                numGridColsCounted += cell.Position.ColumnSpan;
-                                numCellCols += 1;
+                                var colDef = this.ColumnDefinitions[col];
+                                var cell = FindCell(col, row);
+                                if (cell == null) continue;
+                                if (cell.IncludeInAutoSizeCalcs && cell.Position.ColumnSpan == colSpan)
+                                {
+                                    nfloat cellWidth = colDef.SizeType == SizeType.Fixed
+                                        ? colDef.Size
+                                        : cell.View.Frame.Width;
+                                    cellWidth += cell.Position.Margin.Width();
+                                    LogLine($"{   cell.Position} cellWidth={cellWidth}");
+
+                                    if (colSpan == 1)
+                                    {
+                                        maxColWidth[col] = NMath.Max(maxColWidth[col], cellWidth);
+                                    }
+                                    else
+                                    {
+                                        // Need to ensure the other columns we span have enough
+                                        // width to account for this spanned column. 
+                                        nfloat spanWidth = 0;
+                                        for (int col2 = cell.Position.Column; col2 < cell.Position.Column + colSpan; col2++)
+                                        {
+                                            spanWidth += maxColWidth[col2];
+                                        }
+                                        if (cellWidth > spanWidth)
+                                        {
+                                            bool hasZeroColWidth = false;
+                                            for (int col2 = cell.Position.Column; col2 < cell.Position.Column + colSpan; col2++)
+                                            {
+                                                if (maxColWidth[col2] == 0)
+                                                {
+                                                    hasZeroColWidth = true;
+                                                }
+                                            }
+                                            if (hasZeroColWidth)
+                                            {
+                                                // Cop out: just size equally
+                                                for (int col2 = cell.Position.Column; col2 < cell.Position.Column + colSpan; col2++)
+                                                {
+                                                    minColWidth[col2] = maxColWidth[col2] = cellWidth / colSpan;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                // Increase size of columns proportionatly
+                                                nfloat colWidthUpsizeRation = cellWidth / spanWidth;
+                                                for (int col2 = cell.Position.Column; col2 < cell.Position.Column + colSpan; col2++)
+                                                {
+                                                    maxColWidth[col2] *= colWidthUpsizeRation;
+                                                    minColWidth[col2] = maxColWidth[col2];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
-
-                        widthForRow += (numCellCols - 1) * Spacing;
-                        LogLine($"   row={row}: widthForrow={widthForRow}");
-                        maxWidth = NMath.Max(maxWidth, widthForRow);
                     }
 
-                    totalWidth = maxWidth;
+                    LogLine("minColWidth:");
+                    for (int col = 0; col < this.ColumnDefinitions.Count(); col++)
+                    {
+                        LogLine($"   col {col}: {minColWidth[col]}");
+                    }
+
+                    totalWidth = maxColWidth.Sum(w => (float)w);
+                    int numCols = maxColWidth.Count(w => w > 0);
+                    totalWidth += (numCols - 1) * Spacing;
                 }
                 else
                 {
@@ -151,8 +218,10 @@ namespace GridView
                             c.Position.ColumnSpan == 1 && c.IncludeInAutoSizeCalcs);
                         if (autoSizedCells.Any())
                         {
-                            absoluteColumnWidth[column] = autoSizedCells.Max(c => c.View.Frame.Width + c.Position.Margin.Width());
-                            remaining -= absoluteColumnWidth[column];
+                            nfloat colWidth = autoSizedCells.Max(c => c.View.Frame.Width + c.Position.Margin.Width());
+                            colWidth = NMath.Max(minColWidth[column], colWidth);
+                            absoluteColumnWidth[column] = colWidth;
+                            remaining -= colWidth;
                         }
                     }
                 }
@@ -168,11 +237,14 @@ namespace GridView
 					var definition = this.ColumnDefinitions.ElementAt(column);
                     if (definition.Size != -1)
                     {
-                        absoluteColumnWidth[column] = definition.Size > 1 ? definition.Size : definition.Size * remaining;
+                        nfloat colWidth = definition.Size > 1 ? definition.Size : definition.Size * remaining;
+                        absoluteColumnWidth[column] = NMath.Max(minColWidth[column], colWidth);
                     }
                 }
 
-                return new Tuple<nfloat, nfloat[]>(totalWidth, absoluteColumnWidth);
+                LogLine($"totalWidth={totalWidth}");
+
+                 return new Tuple<nfloat, nfloat[]>(totalWidth, absoluteColumnWidth);
 			}
 
             /// <summary>
@@ -180,95 +252,145 @@ namespace GridView
             /// </summary>
 			public Tuple<nfloat,nfloat[]> CalculateAbsoluteRowHeight(Grid grid)
 			{
-				var absoluteRowHeight = new nfloat[this.RowDefinitions.Count()];
+                bool debug = grid.GetType().ToString().Contains("LunarTimesGridView");
+                var absoluteRowHeight = new nfloat[this.RowDefinitions.Count()];
 
                 // Calculate full height of grid
                 nfloat totalHeight;
 
+                var minRowHeight = new nfloat[this.RowDefinitions.Count()];
+
                 if (grid.AutoHeight)
                 {
                     LogLine($"CalculateAbsoluteRowHeight AutoHeight");
-                    nfloat maxHeight = 0;
 
-                    for (int col = 0; col < this.ColumnDefinitions.Count(); col++)
+                    var maxRowHeight = new nfloat[this.RowDefinitions.Count()];
+
+                    int maxRowSpan = grid.CurrentLayout.cells.Max(c => c.Position.RowSpan);
+
+                    for (int rowSpan = 1; rowSpan <= maxRowSpan; rowSpan++)
                     {
-                        // Tracks the # of rows -- adding spans -- that have counted to the
-                        // height calc for this colun. If there were 3 rows defined for the
-                        // grid and (0, 1) has rowSpan=2 and is auto sized and (0, 2) 
-                        // has absolute size spec, this value will be 3 
-                        int numGridRowsCounted = 0;       
-
-                        // In the example above, this value will be 1: (0,1) and (0,2) = 2.  
-                        int numCellRows = 0;
-
-                        nfloat heightForCol = 0;
-                        for (int row = 0; row < this.RowDefinitions.Count(); row++)
+                        for (int col = 0; col < this.ColumnDefinitions.Count(); col++)
                         {
-                            var rowDef = this.RowDefinitions[row];
-                            var cell = FindCell(col, row);
-                            if (cell?.IncludeInAutoSizeCalcs == true)
+                            for (int row = 0; row < this.RowDefinitions.Count(); row++)
                             {
-                                nfloat cellHeight = rowDef.SizeType == SizeType.Fixed
-                                    ? rowDef.Size
-                                    : cell.View.Frame.Height;
-                                cellHeight += cell.Position.Margin.Height();
-                                LogLine($"   {cell.Position} cellHeight={cellHeight}");
-                                heightForCol += cellHeight;
-                                numGridRowsCounted += cell.Position.RowSpan;
-                                numCellRows += 1;
+                                var rowDef = this.RowDefinitions[row];
+                                var cell = FindCell(col, row);
+                                if (cell == null) continue;
+                                if (cell.IncludeInAutoSizeCalcs && cell.Position.RowSpan == rowSpan)
+                                {
+                                    nfloat cellHeight = rowDef.SizeType == SizeType.Fixed
+                                        ? rowDef.Size
+                                        : cell.View.Frame.Height;
+                                    cellHeight += cell.Position.Margin.Height();
+                                    LogLine($"{   cell.Position} cellHeight={cellHeight}");
+
+                                    if (rowSpan == 1)
+                                    {
+                                        maxRowHeight[row] = NMath.Max(maxRowHeight[row], cellHeight);
+                                    }
+                                    else
+                                    {
+                                        // Need to ensure the other rows we span have enough
+                                        // Height to account for this spanned column. 
+                                        nfloat spanHeight = 0;
+                                        for (int row2 = cell.Position.Row; row2 < cell.Position.Row + rowSpan; row2++)
+                                        {
+                                            spanHeight += maxRowHeight[row2];
+                                        }
+                                        if (cellHeight > spanHeight)
+                                        {
+                                            bool hasZeroRowHeight = false;
+                                            for (int row2 = cell.Position.Row; row2 < cell.Position.Row + rowSpan; row2++)
+                                            {
+                                                if (maxRowHeight[row2] == 0)
+                                                {
+                                                    hasZeroRowHeight = true;
+                                                }
+                                            }
+                                            if (hasZeroRowHeight)
+                                            {
+                                                // Cop out: just size equally
+                                                for (int row2 = cell.Position.Row; row2 < cell.Position.Row + rowSpan; row2++)
+                                                {
+                                                    minRowHeight[row2] = maxRowHeight[row2] = cellHeight / rowSpan;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                // Increase size of columns proportionatly
+                                                nfloat colHeightUpsizeRation = cellHeight / spanHeight;
+                                                for (int row2 = cell.Position.Row; row2 < cell.Position.Row + rowSpan; row2++)
+                                                {
+                                                    maxRowHeight[row2] *= colHeightUpsizeRation;
+                                                    minRowHeight[row2] = maxRowHeight[row2];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
-
-                        heightForCol += (numCellRows - 1) * Spacing;
-                        LogLine($"   col={col}: heightForCol={heightForCol}");
-                        maxHeight = NMath.Max(maxHeight, heightForCol);
                     }
 
-                    totalHeight = maxHeight;
+                    LogLine("minRowHeight:");
+                    for (int row = 0; row < this.RowDefinitions.Count(); row++)
+                    {
+                        LogLine($"   row {row}: {minRowHeight[row]}");
+                    }
+
+                    totalHeight = maxRowHeight.Sum(h => (float)h);
+                    int numRows = maxRowHeight.Count(h => h > 0);
+                    totalHeight += (numRows - 1) * Spacing;
                 }
                 else
                 {
                     totalHeight = grid.Frame.Height;
                 }
 
-                // Track available row height available for percent-based sized roiws
-                // Add height of fixed size rows
+                // Track available row Height available for percent-based sized roiws
+                // Add Height of fixed size cols
                 nfloat fixedHeight = this.RowDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
                 nfloat remaining = totalHeight - fixedHeight;
 
-                // Define height of auto sized rows
+                // Add Height of auto sized columns
                 for (int row = 0; row < this.RowDefinitions.Count(); row++)
                 {
                     var definition = this.RowDefinitions.ElementAt(row);
                     if (definition.Size == -1)
                     {
-                        var autoSizedCells = Cells.Where(c => c.Position.Row == row && c.Position.RowSpan == 1 && c.IncludeInAutoSizeCalcs);
+                        var autoSizedCells = Cells.Where(c => c.Position.Row == row &&
+                            c.Position.RowSpan == 1 && c.IncludeInAutoSizeCalcs);
                         if (autoSizedCells.Any())
                         {
-                            absoluteRowHeight[row] = autoSizedCells.Max(c => c.View.Frame.Height + c.Position.Margin.Height());
-                            remaining -= absoluteRowHeight[row];
+                            nfloat rowHeight = autoSizedCells.Max(c => c.View.Frame.Height + c.Position.Margin.Height());
+                            rowHeight = NMath.Max(minRowHeight[row], rowHeight);
+                            absoluteRowHeight[row] = rowHeight;
+                            remaining -= rowHeight;
                         }
                     }
                 }
 
                 // Add size of padding and spacing
                 remaining -= this.Padding.Top + this.Padding.Bottom;
-				remaining -= (this.RowDefinitions.Count() - 1) * this.Spacing;
+                remaining -= (this.RowDefinitions.Count() - 1) * this.Spacing;
 
-				remaining = (nfloat)Math.Max(0, remaining);
+                remaining = (nfloat)Math.Max(0, remaining);
 
-                // Define size of fixed and pct sized rows
-				for (int row = 0; row < this.RowDefinitions.Count(); row++)
-				{
-					var definition = this.RowDefinitions.ElementAt(row);
+                for (int row = 0; row < this.RowDefinitions.Count(); row++)
+                {
+                    var definition = this.RowDefinitions.ElementAt(row);
                     if (definition.Size != -1)
                     {
-                        absoluteRowHeight[row] = definition.Size > 1 ? definition.Size : definition.Size * remaining;
+                        nfloat rowHeight = definition.Size > 1 ? definition.Size : definition.Size * remaining;
+                        absoluteRowHeight[row] = NMath.Max(minRowHeight[row], rowHeight);
                     }
                 }
 
+                LogLine($"totalHeight={totalHeight}");
+
                 return new Tuple<nfloat, nfloat[]>(totalHeight, absoluteRowHeight);
-			}
+            }
 
 			#endregion
 

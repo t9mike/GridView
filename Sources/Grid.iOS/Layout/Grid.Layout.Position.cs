@@ -67,7 +67,17 @@ namespace GridView
 
                 public override string ToString()
                 {
-                    return $"Col={Column}-{ColumnSpan} Row={Row}-{RowSpan}";
+                    string col = Column.ToString();
+                    if (ColumnSpan > 1)
+                    {
+                        col += "-" + (Column + ColumnSpan - 1).ToString();
+                    }
+                    string row = Row.ToString();
+                    if (RowSpan > 1)
+                    {
+                        row += "-" + (Row + RowSpan - 1).ToString();
+                    }
+                    return $"Col={col} Row={row}";
                 }
             }
         }

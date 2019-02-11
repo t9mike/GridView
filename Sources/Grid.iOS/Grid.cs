@@ -190,10 +190,27 @@
         public override void LayoutSubviews()
         {
             string debugIndent = String.Concat(Enumerable.Repeat("   ", numSuperviews(this)));
-            LogLine($"{debugIndent}LayoutSubviews {GetHashCode()}");
+            LogLine($"{debugIndent}LayoutSubviews {GetHashCode()} {this.GetType()}");
             base.LayoutSubviews();
 
             this.UpdateLayout();
+
+            foreach (var cell in this.CurrentLayout.Cells)             {                 if (cell.Position.Horizontal == Layout.Alignment.Stretched &&                     this.CurrentLayout.ColumnDefinitions[cell.Position.Column].SizeType == Layout.SizeType.Auto)
+                {
+                    throw new Exception("Stretched horizontal cell alignment cannot be used in an auto sized column");
+                }
+                 if (cell.Position.Vertical == Layout.Alignment.Stretched &&
+                    this.CurrentLayout.RowDefinitions[cell.Position.Row].SizeType == Layout.SizeType.Auto)
+                {
+                    throw new Exception("Stretched vertical cell alignment cannot be used in an auto sized row");
+                }
+            }
+
+            LogLine($"{debugIndent}Cells:");
+            foreach (var cell in this.CurrentLayout.Cells)
+            {
+                LogLine($"{debugIndent}   {cell}");
+            }
 
             // Calculate row sizes
             var heights = this.CurrentLayout.CalculateAbsoluteRowHeight(this);
