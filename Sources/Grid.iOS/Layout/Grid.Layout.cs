@@ -196,7 +196,7 @@ namespace GridView
 
                     totalWidth = maxColWidth.Sum(w => (float)w);
                     int numCols = maxColWidth.Count(w => w > 0);
-                    totalWidth += (numCols - 1) * Spacing;
+                    totalWidth += (numCols - 1) * Spacing + Padding.Left + Padding.Right;
                 }
                 else
                 {
@@ -341,7 +341,7 @@ namespace GridView
 
                     totalHeight = maxRowHeight.Sum(h => (float)h);
                     int numRows = maxRowHeight.Count(h => h > 0);
-                    totalHeight += (numRows - 1) * Spacing;
+                    totalHeight += (numRows - 1) * Spacing + Padding.Top + Padding.Bottom;
                 }
                 else
                 {

@@ -24,10 +24,11 @@ namespace GridViewSample
 
             // TODO: make a proper sample launcher that shows all samples and loads selected sample view controller
             //Window.RootViewController = new SampleViewController1();
-            Window.RootViewController = new SampleViewController2();
+            //Window.RootViewController = new SampleViewController2();
             //Window.RootViewController = new SampleViewController3();
             //Window.RootViewController = new SampleViewController4();
             //Window.RootViewController = new SampleViewController5();
+            Window.RootViewController = new SampleViewController6();
             Window.MakeKeyAndVisible();
 
             return true;
