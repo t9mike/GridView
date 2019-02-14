@@ -28,7 +28,8 @@ namespace GridViewSample
             //Window.RootViewController = new SampleViewController3();
             //Window.RootViewController = new SampleViewController4();
             //Window.RootViewController = new SampleViewController5();
-            Window.RootViewController = new SampleViewController6();
+            //Window.RootViewController = new SampleViewController6();
+            Window.RootViewController = new SampleViewController7();
             Window.MakeKeyAndVisible();
 
             return true;

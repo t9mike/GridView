@@ -119,6 +119,7 @@
     <Compile Include="Samples\SampleViewController4.cs" />
     <Compile Include="Samples\SampleViewController5.cs" />
     <Compile Include="Samples\SampleViewController6.cs" />
+    <Compile Include="Samples\SampleViewController7.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Grid.iOS\Grid.iOS.csproj">
