@@ -187,6 +187,26 @@
             return n;
         }
 
+        /// <summary>
+        /// This is useful in situations where you need the size of eventual
+        /// layout before the view is loaded. To avoid hangs, a limit of
+        /// # LayoutSubviews() is done.
+        /// </summary>
+        /// <param name="maxAttemps">Max LayoutSubviews() to perform. Default is 10.</param>
+        public void LayoutSubviewsUntilSizeStable(int maxAttemps = 10)
+        {
+            int attempt = 0;
+            while (++attempt <= maxAttemps)
+            {
+                var before = Frame.Size;
+                LayoutSubviews();
+                if (before == Frame.Size)
+                {
+                    return;
+                }
+            }
+        }
+
         public override void LayoutSubviews()
         {
             string debugIndent = String.Concat(Enumerable.Repeat("   ", numSuperviews(this)));
