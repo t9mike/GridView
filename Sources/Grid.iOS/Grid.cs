@@ -260,13 +260,22 @@
             foreach (var cell in this.CurrentLayout.Cells)
             {
                 LogLine();
-                LogLine($"{debugIndent}   Laying out tag " + cell.Position.Tag + ", " +
-                    cell.View.GetType());
+                LogLine($"{debugIndent}   Laying out col {cell.Position.Column}, row {cell.Position.Row}, tag '{cell.Position.Tag}', {cell.View.GetType()}");
 
                 if (!cell.IncludeInAutoSizeCalcs)
                 {
                     LogLine($"{debugIndent}      skipping: View.Hidden=true and CollapseHidden=true");
                     continue;
+                }
+
+                if (cell.Position.Row >= this.CurrentLayout.RowDefinitions.Count())
+                {
+                    throw new Exception($"a cell is defined at row {cell.Position.Row}, col {cell.Position.Column} but there are only {this.CurrentLayout.RowDefinitions.Count()} rows defined in the grid");
+                }
+
+                if (cell.Position.Column >= this.CurrentLayout.ColumnDefinitions.Count())
+                {
+                    throw new Exception($"a cell is defined at row {cell.Position.Row}, col {cell.Position.Column} but there are only {this.CurrentLayout.ColumnDefinitions.Count()} columns defined in the grid");
                 }
 
                 cell.View.LayoutSubviews();

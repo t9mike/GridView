@@ -2,6 +2,7 @@
 
 namespace GridView
 {
+    using System;
     using CoreGraphics;
 
     public partial class Grid : UIView
@@ -12,7 +13,7 @@ namespace GridView
 			{
 				public Cell(UIView view, Position position)
 				{
-					this.View = view;
+                    this.View = view ?? throw new Exception($"view is null for cell at row {position.Row}, column {position.Column}");
 					this.InitialSize = this.View.Bounds.Size;
 					this.Position = position;
 				}
