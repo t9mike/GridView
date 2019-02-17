@@ -38,7 +38,7 @@ namespace GridView
                     this.Tag = null;
                     this.StackType = StackType.None;
                     this.StackCellSize = CGSize.Empty; // N/A unless StackType is not None
-                    this.CollapseHidden = true;
+                    this.CollapseHidden = Collapse.Both;
                 }
 
                 public int Row { get; set; }
@@ -59,7 +59,7 @@ namespace GridView
 
                 public object Tag { get; set; }
 
-                public bool CollapseHidden { get; set; }
+                public Collapse CollapseHidden { get; set; }
 
                 // Temporary to support stack creation fluent interface
                 internal StackType StackType;

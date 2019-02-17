@@ -50,7 +50,7 @@ namespace GridView
             Grid.Layout.Direction direction = Grid.Layout.Direction.Both) =>
             Align(cell, Grid.Layout.Alignment.End, direction);
 
-        public static Grid.Layout.Cell CollapseHidden(this Grid.Layout.Cell cell, bool collapseHidden) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { CollapseHidden = collapseHidden });
+        public static Grid.Layout.Cell CollapseHidden(this Grid.Layout.Cell cell, Grid.Layout.Collapse collapse) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { CollapseHidden = collapse });
 
         /// <summary>
         /// Defines a new column after last and sets the width.

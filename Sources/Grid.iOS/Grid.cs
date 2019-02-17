@@ -262,9 +262,9 @@
                 LogLine();
                 LogLine($"{debugIndent}   Laying out col {cell.Position.Column}, row {cell.Position.Row}, tag '{cell.Position.Tag}', {cell.View.GetType()}");
 
-                if (!cell.IncludeInAutoSizeCalcs)
+                if (!cell.IncludeInAutoWidthSizeCalcs && !cell.IncludeInAutoHeightSizeCalcs)
                 {
-                    LogLine($"{debugIndent}      skipping: View.Hidden=true and CollapseHidden=true");
+                    LogLine($"{debugIndent}      skipping: View.Hidden=true and IncludeInAutoWidthSizeCalcs,IncludeInAutoHeightSizeCalcs false");
                     continue;
                 }
 

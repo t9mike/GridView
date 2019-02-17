@@ -25,10 +25,16 @@ namespace GridView
                 public Position Position { get; internal set; }
 
                 /// <summary>
-                /// True when the cell will be inspected to determine column/row with if 
-                /// size spec is -1 or when AutoWidth or AutoHeight is true.
+                /// True when the cell's height will be inspected to determine row height if 
+                /// size spec is -1.
                 /// </summary>
-                public bool IncludeInAutoSizeCalcs => View.Hidden == false || Position.CollapseHidden == false;
+                public bool IncludeInAutoHeightSizeCalcs => View.Hidden == false || !Position.CollapseHidden.HasFlag(Collapse.Height);
+
+                /// <summary>
+                /// True when the cell's width will be inspected to determine column width if 
+                /// size spec is -1.
+                /// </summary>
+                public bool IncludeInAutoWidthSizeCalcs => View.Hidden == false || !Position.CollapseHidden.HasFlag(Collapse.Width);
 
                 public override string ToString()
                 {
