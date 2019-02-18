@@ -9,6 +9,25 @@
 
     public partial class Grid : UIView
     {
+        /// <summary>
+        /// Fired after the grid has performed a layout.
+        /// </summary>
+        public event Action<LayoutCompletedEventArgs> LayoutCompleted;
+
+        public class LayoutCompletedEventArgs : EventArgs
+        {
+            public readonly CGSize OldSize;
+            public readonly CGSize NewSize;
+            public bool SizeChanged => OldSize != NewSize;
+
+            public LayoutCompletedEventArgs(CGSize oldSize, 
+                CGSize newSize)
+            {
+                OldSize = oldSize;
+                NewSize = newSize;
+            }
+        }
+
         public Grid()
         {
 
@@ -209,6 +228,8 @@
 
         public override void LayoutSubviews()
         {
+            var oldSize = Frame.Size;
+
             string debugIndent = String.Concat(Enumerable.Repeat("   ", numSuperviews(this)));
             LogLine($"{debugIndent}LayoutSubviews {GetHashCode()} {this.GetType()}");
             base.LayoutSubviews();
@@ -371,10 +392,21 @@
             }
 
             LogLine();
+
+            OnLayoutCompleted(oldSize, Frame.Size);
         }
 
 
         #endregion
+
+        protected virtual void OnLayoutCompleted(CGSize oldSize, CGSize newSize)
+        {
+            if (LayoutCompleted != null)
+            {
+                var e = new LayoutCompletedEventArgs(oldSize, newSize);
+                LayoutCompleted(e);
+            }
+        }
 
         [Conditional("DEBUG")]
         internal static void Log(string msg = "")
