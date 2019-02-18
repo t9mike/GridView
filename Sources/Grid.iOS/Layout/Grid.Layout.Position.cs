@@ -7,7 +7,7 @@ namespace GridView
 	{
 		public partial class Layout
 		{
-            public struct Position
+            public class Position
             {
                 public Position(Position other)
                 {

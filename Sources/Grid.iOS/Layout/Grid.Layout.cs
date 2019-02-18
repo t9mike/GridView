@@ -60,6 +60,14 @@ namespace GridView
 			public IEnumerable<Cell> Cells => cells.ToArray();
 
             /// <summary>
+            /// Finds a cell that holds the specified UIView. Retuns null if there is none.
+            /// </summary>
+            public Cell FindCell(UIView view)
+            {
+                return this.Cells.FirstOrDefault(c => c.View == view);
+            }
+
+            /// <summary>
             /// Finds a cell by col, row index. Retuns null if there is none.
             /// </summary>
             public Cell FindCell(int col, int row)
