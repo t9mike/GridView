@@ -118,7 +118,10 @@
 
                     foreach (var cell in layout.Cells.Where(v => !this.Subviews.Contains(v.View)))
                     {
-                        this.AddSubview(cell.View);
+                        if (cell.View != null)
+                        {
+                            this.AddSubview(cell.View);
+                        }
                     }
                 }
             }
@@ -236,14 +239,18 @@
 
             this.UpdateLayout();
 
-            foreach (var cell in this.CurrentLayout.Cells)             {                 if (cell.Position.Horizontal == Layout.Alignment.Stretched &&                     this.CurrentLayout.ColumnDefinitions[cell.Position.Column].SizeType == Layout.SizeType.Auto)
+            // Allow streched cells that are in an auto sized column or row only if there is at
+            // least one non-stretched cell that starts that same column/row
+            foreach (var cell in this.CurrentLayout.Cells)             {                 if (cell.Position.Horizontal == Layout.Alignment.Stretched &&                     this.CurrentLayout.ColumnDefinitions[cell.Position.Column].SizeType == Layout.SizeType.Auto &&
+                    !this.CurrentLayout.Cells.Any(c => c.Position.Column == cell.Position.Column && c.Position.Horizontal != Layout.Alignment.Stretched))
                 {
-                    throw new Exception("Stretched horizontal cell alignment cannot be used in an auto sized column");
+                    throw new Exception($"Stretched horizontal cell alignment on row {cell.Position.Row}, col {cell.Position.Column} cannot be used in an auto sized column when there is no other cell in that column that is not stretched");
                 }
                  if (cell.Position.Vertical == Layout.Alignment.Stretched &&
-                    this.CurrentLayout.RowDefinitions[cell.Position.Row].SizeType == Layout.SizeType.Auto)
+                    this.CurrentLayout.RowDefinitions[cell.Position.Row].SizeType == Layout.SizeType.Auto &&
+                    !this.CurrentLayout.Cells.Any(c => c.Position.Row == cell.Position.Row && c.Position.Vertical != Layout.Alignment.Stretched))
                 {
-                    throw new Exception("Stretched vertical cell alignment cannot be used in an auto sized row");
+                    throw new Exception($"Stretched vertical cell alignment on row {cell.Position.Row}, col {cell.Position.Column} cannot be used in an auto sized row when there is no other cell in that column that is not stretched");
                 }
             }
 
@@ -281,7 +288,7 @@
             foreach (var cell in this.CurrentLayout.Cells)
             {
                 LogLine();
-                LogLine($"{debugIndent}   Laying out col {cell.Position.Column}, row {cell.Position.Row}, tag '{cell.Position.Tag}', {cell.View.GetType()}");
+                LogLine($"{debugIndent}   Laying out col {cell.Position.Column}, row {cell.Position.Row}, tag '{cell.Position.Tag}', {cell.View?.GetType()}");
 
                 if (!cell.IncludeInAutoWidthSizeCalcs && !cell.IncludeInAutoHeightSizeCalcs)
                 {
@@ -386,7 +393,7 @@
                 if (newFrame != cell.View.Frame)
                 {
                     Log(": UPDATE");
-                    cell.View.Frame = newFrame;
+                    SetCellFrame(cell, newFrame);
                 }
                 LogLine();
             }
@@ -394,6 +401,19 @@
             LogLine();
 
             OnLayoutCompleted(oldSize, Frame.Size);
+        }
+
+        /// <summary>
+        /// This is called when the layout system is defining the size and position
+        /// of a cell. You could override to perform additional tasks. It is only
+        /// called when the cell's frame would change.
+        /// </summary>
+        /// <remarks>
+        /// You can use cell.Position.Tag, cell.Position.Column/Row, or inspect 
+        /// cell.View's type to do something special based on the cell.</remarks>
+        protected virtual void SetCellFrame(Layout.Cell cell, CGRect frame)
+        {
+            cell.View.Frame = frame;
         }
 
 

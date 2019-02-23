@@ -11,10 +11,17 @@ namespace GridView
 		{
 			public class Cell
 			{
+                /// <summary>
+                /// 
+                /// </summary>
+                /// <param name="view">OK for view to be null: it will be skipped in layout. This 
+                /// provides a way to easily skip a row/column in certain situations without
+                /// constructing the underlying UIView or have a separate layout.</param>
+                /// <param name="position">Position.</param>
 				public Cell(UIView view, Position position)
 				{
-                    this.View = view ?? throw new Exception($"view is null for cell at row {position.Row}, column {position.Column}");
-					this.InitialSize = this.View.Bounds.Size;
+                    this.View = view;
+					this.InitialSize = this.View == null ? CGSize.Empty : this.View.Bounds.Size;
 					this.Position = position;
 				}
 
@@ -28,13 +35,13 @@ namespace GridView
                 /// True when the cell's height will be inspected to determine row height if 
                 /// size spec is -1.
                 /// </summary>
-                public bool IncludeInAutoHeightSizeCalcs => View.Hidden == false || !Position.CollapseHidden.HasFlag(Collapse.Height);
+                public bool IncludeInAutoHeightSizeCalcs => View?.Hidden == false || !Position.CollapseHidden.HasFlag(Collapse.Height);
 
                 /// <summary>
                 /// True when the cell's width will be inspected to determine column width if 
                 /// size spec is -1.
                 /// </summary>
-                public bool IncludeInAutoWidthSizeCalcs => View.Hidden == false || !Position.CollapseHidden.HasFlag(Collapse.Width);
+                public bool IncludeInAutoWidthSizeCalcs => View?.Hidden == false || !Position.CollapseHidden.HasFlag(Collapse.Width);
 
                 public override string ToString()
                 {
