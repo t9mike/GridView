@@ -156,30 +156,30 @@
                     {
                         y += this.CurrentLayout.Spacing;
                     }
+                }
 
-                    nfloat x = this.CurrentLayout.Padding.Left;
-                    bool firstRealCol = true;
+                nfloat x = this.CurrentLayout.Padding.Left;
+                bool firstRealCol = true;
 
-                    for (int col = 0; col < absoluteColumnWidth.Count(); col++)
+                for (int col = 0; col < absoluteColumnWidth.Count(); col++)
+                {
+                    nfloat width = absoluteColumnWidth[col];
+                    if (width > 0)
                     {
-                        nfloat width = absoluteColumnWidth[col];
-                        if (width > 0)
+                        if (firstRealCol)
                         {
-                            if (firstRealCol)
-                            {
-                                firstRealCol = false;
-                            }
-                            else
-                            {
-                                x += this.CurrentLayout.Spacing;
-                            }
-                            pos[col, row] = new CGPoint(x, y);
-                            x += width;
+                            firstRealCol = false;
+                        }
+                        else
+                        {
+                            x += this.CurrentLayout.Spacing;
                         }
                     }
-
-                    y += height;
+                    pos[col, row] = new CGPoint(x, y);
+                    x += width;
                 }
+
+                y += height;
             }
 
             return pos;
