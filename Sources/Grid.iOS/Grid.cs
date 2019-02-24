@@ -10,6 +10,13 @@
     public partial class Grid : UIView
     {
         /// <summary>
+        /// Set to true to enable layout logging in DEBUG compile mode.
+        /// Default is off. Logging is never performed in non-DEBUG
+        /// mode.
+        /// </summary>
+        public static bool Enable_Debug_Log = false;
+
+        /// <summary>
         /// Fired after the grid has performed a layout.
         /// </summary>
         public event Action<LayoutCompletedEventArgs> LayoutCompleted;
@@ -428,11 +435,18 @@
             }
         }
 
+        // Log() and LogLine() will be optimized away in non-DEBUG
+        // compile modes, so these calls will not effect performande
+        // of the real app
+
         [Conditional("DEBUG")]
         internal static void Log(string msg = "")
         {
 #if ENABLE_DEBUG_LOG
-            Console.Write(msg);
+            if (Enable_Debug_Log)
+            {
+                Console.Write(msg);
+            }
 #endif
         }
 
@@ -440,7 +454,10 @@
         internal static void LogLine(string msg = "")
         {
 #if ENABLE_DEBUG_LOG
-            Console.WriteLine(msg);
+            if (Enable_Debug_Log)
+            {
+                Console.WriteLine(msg);
+            }
 #endif
         }
     }
