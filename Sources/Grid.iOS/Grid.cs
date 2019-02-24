@@ -333,8 +333,8 @@
                         break;
 
                     case Layout.Alignment.Center:
-                        // Ignore Margin
-                        position.Y += (cellSize.Height / 2) - (viewSize.Height / 2);
+                        // Honor Margin.Left and Right
+                        position.Y += (cellSize.Height / 2f) - (viewSize.Height / 2f) + cell.Position.Margin.Top/2f - cell.Position.Margin.Bottom/2f;
                         cellSize.Height = viewSize.Height;
                         break;
 
@@ -363,8 +363,8 @@
                         break;
 
                     case Layout.Alignment.Center:
-                        // Ignore Margin
-                        position.X += (cellSize.Width / 2) - (viewSize.Width / 2);
+                        // Honor Margin.Left and Right
+                        position.X += (cellSize.Width / 2f) - (viewSize.Width / 2f) + cell.Position.Margin.Left / 2f - cell.Position.Margin.Right / 2f;
                         cellSize.Width = viewSize.Width;
                         break;
 
