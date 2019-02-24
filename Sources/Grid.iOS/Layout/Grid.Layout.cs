@@ -116,7 +116,6 @@ namespace GridView
             /// </summary>
             public Tuple<nfloat, nfloat[]> CalculateAbsoluteColumnWidth(Grid grid)
 			{
-                bool debug = grid.GetType().ToString().Contains("LunarTimesGridView");
                 var absoluteColumnWidth = new nfloat[this.ColumnDefinitions.Count()];
 
                 // Calculate full height of grid
@@ -260,7 +259,6 @@ namespace GridView
             /// </summary>
 			public Tuple<nfloat,nfloat[]> CalculateAbsoluteRowHeight(Grid grid)
 			{
-                bool debug = grid.GetType().ToString().Contains("LunarTimesGridView");
                 var absoluteRowHeight = new nfloat[this.RowDefinitions.Count()];
 
                 // Calculate full height of grid
