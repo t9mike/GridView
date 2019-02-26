@@ -445,7 +445,7 @@
 #if ENABLE_DEBUG_LOG
             if (Enable_Debug_Log)
             {
-                Console.Write(msg);
+                Debug.Write(msg);
             }
 #endif
         }
@@ -456,7 +456,7 @@
 #if ENABLE_DEBUG_LOG
             if (Enable_Debug_Log)
             {
-                Console.WriteLine(msg);
+                Debug.WriteLine(msg);
             }
 #endif
         }
