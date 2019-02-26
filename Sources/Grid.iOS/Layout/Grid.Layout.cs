@@ -141,9 +141,11 @@ namespace GridView
                                 if (cell == null) continue;
                                 if (cell.IncludeInAutoWidthSizeCalcs && cell.Position.ColumnSpan == colSpan)
                                 {
-                                    nfloat cellWidth = colDef.SizeType == SizeType.Fixed
-                                        ? colDef.Size
-                                        : cell.View.Frame.Width;
+                                    nfloat cellWidth = colDef.SizeType == SizeType.Auto && cell.Position.Horizontal == Alignment.Stretched
+                                        ? 0f
+                                        : colDef.SizeType == SizeType.Fixed
+                                            ? colDef.Size
+                                            : cell.View.Frame.Width;
                                     cellWidth += cell.Position.Margin.Width();
                                     LogLine($"   {cell.Position} cellWidth={cellWidth}");
 
@@ -222,7 +224,8 @@ namespace GridView
                     if (definition.Size == -1)
                     {
                         var autoSizedCells = Cells.Where(c => c.Position.Column == column &&
-                            c.Position.ColumnSpan == 1 && c.IncludeInAutoWidthSizeCalcs);
+                            c.Position.ColumnSpan == 1 && c.IncludeInAutoWidthSizeCalcs &&
+                            c.Position.Horizontal != Alignment.Stretched);
                         if (autoSizedCells.Any())
                         {
                             nfloat colWidth = autoSizedCells.Max(c => c.View.Frame.Width + c.Position.Margin.Width());
@@ -285,9 +288,11 @@ namespace GridView
                                 if (cell == null) continue;
                                 if (cell.IncludeInAutoHeightSizeCalcs && cell.Position.RowSpan == rowSpan)
                                 {
-                                    nfloat cellHeight = rowDef.SizeType == SizeType.Fixed
-                                        ? rowDef.Size
-                                        : cell.View.Frame.Height;
+                                    nfloat cellHeight = rowDef.SizeType == SizeType.Auto && cell.Position.Vertical == Alignment.Stretched
+                                        ? 0f
+                                        : rowDef.SizeType == SizeType.Fixed
+                                            ? rowDef.Size
+                                            : cell.View.Frame.Height;
                                     cellHeight += cell.Position.Margin.Height();
                                     LogLine($"   {cell.Position} cellHeight={cellHeight}");
 
@@ -366,7 +371,8 @@ namespace GridView
                     if (definition.Size == -1)
                     {
                         var autoSizedCells = Cells.Where(c => c.Position.Row == row &&
-                            c.Position.RowSpan == 1 && c.IncludeInAutoHeightSizeCalcs);
+                            c.Position.RowSpan == 1 && c.IncludeInAutoHeightSizeCalcs && 
+                            c.Position.Vertical != Alignment.Stretched);
                         if (autoSizedCells.Any())
                         {
                             nfloat rowHeight = autoSizedCells.Max(c => c.View.Frame.Height + c.Position.Margin.Height());
