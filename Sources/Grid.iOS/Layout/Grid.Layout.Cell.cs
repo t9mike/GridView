@@ -35,13 +35,15 @@ namespace GridView
                 /// True when the cell's height will be inspected to determine row height if 
                 /// size spec is -1.
                 /// </summary>
-                public bool IncludeInAutoHeightSizeCalcs => View?.Hidden == false || !Position.CollapseHidden.HasFlag(Collapse.Height);
+                public bool IncludeInAutoHeightSizeCalcs => 
+                    (View?.Hidden == false && View?.Alpha > 0) || !Position.CollapseHidden.HasFlag(Collapse.Height);
 
                 /// <summary>
                 /// True when the cell's width will be inspected to determine column width if 
                 /// size spec is -1.
                 /// </summary>
-                public bool IncludeInAutoWidthSizeCalcs => View?.Hidden == false || !Position.CollapseHidden.HasFlag(Collapse.Width);
+                public bool IncludeInAutoWidthSizeCalcs => 
+                    (View?.Hidden == false && View?.Alpha > 0) || !Position.CollapseHidden.HasFlag(Collapse.Width);
 
                 public override string ToString()
                 {

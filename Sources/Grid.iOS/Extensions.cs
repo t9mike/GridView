@@ -50,6 +50,10 @@ namespace GridView
             Grid.Layout.Direction direction = Grid.Layout.Direction.Both) =>
             Align(cell, Grid.Layout.Alignment.End, direction);
 
+        /// <summary>
+        /// If a View is Hidden or has Alpha set to 0, whether to
+        /// skip the view when auto sizing the width and/or height. 
+        /// </summary>
         public static Grid.Layout.Cell CollapseHidden(this Grid.Layout.Cell cell, Grid.Layout.Collapse collapse) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { CollapseHidden = collapse });
 
         /// <summary>
