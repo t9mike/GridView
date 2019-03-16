@@ -252,6 +252,17 @@ namespace GridView
                     }
                 }
 
+                // In auto width mode, can now take into account absolute and auto sized
+                // columns
+                if (grid.AutoWidth)
+                {
+                    totalWidth = (nfloat)(
+                        absoluteColumnWidth.Sum(w => w) +
+                        Padding.Left + this.Padding.Right +
+                        (ColumnDefinitions.Count() - 1) * this.Spacing
+                        );
+                }
+
                 LogLine($"totalWidth={totalWidth}");
 
                  return new Tuple<nfloat, nfloat[]>(totalWidth, absoluteColumnWidth);
@@ -397,6 +408,17 @@ namespace GridView
                         nfloat rowHeight = definition.Size > 1 ? definition.Size : definition.Size * remaining;
                         absoluteRowHeight[row] = NMath.Max(minRowHeight[row], rowHeight);
                     }
+                }
+
+                // In auto height mode, can now take into account absolute and auto sized
+                // rows
+                if (grid.AutoHeight)
+                {
+                    totalHeight = (nfloat)(
+                        absoluteRowHeight.Sum(h => h) +
+                        Padding.Top + this.Padding.Bottom +
+                        (RowDefinitions.Count() - 1) * this.Spacing
+                        );
                 }
 
                 LogLine($"totalHeight={totalHeight}");
