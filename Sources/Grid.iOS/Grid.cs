@@ -401,7 +401,7 @@
                 }
 
                 var newFrame = new CGRect(position, cellSize);
-                Log($"{debugIndent}      newFrame={newFrame}, cell.View.Frame={cell.View.Frame}");
+                Log($"{debugIndent}      newFrame={newFrame}, cell.View.Frame={cell.View?.Frame}");
                 if (newFrame != cell.View.Frame)
                 {
                     Log(": UPDATE");

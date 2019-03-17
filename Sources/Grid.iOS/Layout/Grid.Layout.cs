@@ -247,7 +247,8 @@ namespace GridView
 					var definition = this.ColumnDefinitions.ElementAt(column);
                     if (definition.Size != -1)
                     {
-                        nfloat colWidth = definition.Size > 1 ? definition.Size : definition.Size * remaining;
+                        bool includeCol = Cells.Where(c => c.Position.Column == column).Any(c => c.IncludeInAutoHeightSizeCalcs);
+                        nfloat colWidth = !includeCol ? 0 : definition.Size > 1 ? definition.Size : definition.Size * remaining;
                         absoluteColumnWidth[column] = NMath.Max(minColWidth[column], colWidth);
                     }
                 }
@@ -402,10 +403,12 @@ namespace GridView
 
                 for (int row = 0; row < this.RowDefinitions.Count(); row++)
                 {
+
                     var definition = this.RowDefinitions.ElementAt(row);
                     if (definition.Size != -1)
                     {
-                        nfloat rowHeight = definition.Size > 1 ? definition.Size : definition.Size * remaining;
+                        bool includeRow = Cells.Where(c => c.Position.Row == row).Any(c => c.IncludeInAutoHeightSizeCalcs);
+                        nfloat rowHeight = !includeRow ? 0 : definition.Size > 1 ? definition.Size : definition.Size * remaining;
                         absoluteRowHeight[row] = NMath.Max(minRowHeight[row], rowHeight);
                     }
                 }
