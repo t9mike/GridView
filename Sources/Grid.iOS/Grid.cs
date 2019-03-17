@@ -391,10 +391,15 @@
                         break;
                 }
 
-                if (cell.Position.NoResize)
+                if (cell.Position.NoResize || cell.Position.NoPosition)
                 {
                     cellSize = cell.View.Frame.Size;
                 }
+                if (cell.Position.NoPosition)
+                {
+                    position = cell.View.Frame.Location;
+                }
+
                 var newFrame = new CGRect(position, cellSize);
                 Log($"{debugIndent}      newFrame={newFrame}, cell.View.Frame={cell.View.Frame}");
                 if (newFrame != cell.View.Frame)

@@ -18,6 +18,7 @@ namespace GridView
                     this.Horizontal = other.Horizontal;
                     this.Vertical = other.Vertical;
                     this.NoResize = other.NoResize;
+                    this.NoPosition = other.NoPosition;
                     this.Margin = other.Margin;
                     this.Tag = other.Tag;
                     this.StackType = other.StackType;
@@ -34,6 +35,7 @@ namespace GridView
                     this.Horizontal = Alignment.Start;
                     this.Vertical = Alignment.Start;
                     this.NoResize = false;
+                    this.NoPosition = false;
                     this.Margin = UIEdgeInsets.Zero;
                     this.Tag = null;
                     this.StackType = StackType.None;
@@ -54,6 +56,8 @@ namespace GridView
                 public Alignment Horizontal { get; set; }
 
                 public bool NoResize { get; set; }
+
+                public bool NoPosition { get; set; }
 
                 public UIEdgeInsets Margin { get; set; }
 

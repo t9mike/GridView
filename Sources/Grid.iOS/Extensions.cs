@@ -98,6 +98,12 @@ namespace GridView
         /// </summary>
         public static Grid.Layout.Cell NoResize(this Grid.Layout.Cell cell) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { NoResize = true });
 
+        /// <summary>
+        /// When set, the cell's view will not be positioned during layout nor sized. This is useful
+        /// when the X,Y position of a sub-view is set in some other way. 
+        /// </summary>
+        public static Grid.Layout.Cell NoPosition(this Grid.Layout.Cell cell) => new Grid.Layout.Cell(cell.View, new Grid.Layout.Position(cell.Position) { NoPosition = true });
+
         public static nfloat Width(this UIEdgeInsets edge) => edge.Left + edge.Right;
         public static nfloat Height(this UIEdgeInsets edge) => edge.Top + edge.Bottom;
 
