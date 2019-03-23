@@ -29,6 +29,8 @@ namespace GridView
 
 				public UIView View { get; private set; }
 
+                public CGSize AutoSizeSize => Position.UseFixedSize ? Position.FixedSize : View.Frame.Size;
+
                 public Position Position { get; internal set; }
 
                 /// <summary>

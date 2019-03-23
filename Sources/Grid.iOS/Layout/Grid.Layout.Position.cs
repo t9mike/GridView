@@ -24,6 +24,8 @@ namespace GridView
                     this.StackType = other.StackType;
                     this.StackCellSize = other.StackCellSize;
                     this.CollapseHidden = other.CollapseHidden;
+                    this.FixedSize = other.FixedSize;
+                    this.UseFixedSize = other.UseFixedSize;
                 }
 
                 public Position(int row, int column)
@@ -41,6 +43,8 @@ namespace GridView
                     this.StackType = StackType.None;
                     this.StackCellSize = CGSize.Empty; // N/A unless StackType is not None
                     this.CollapseHidden = Collapse.Both;
+                    this.FixedSize = CGSize.Empty;
+                    this.UseFixedSize = false;
                 }
 
                 public int Row { get; set; }
@@ -64,6 +68,9 @@ namespace GridView
                 public object Tag { get; set; }
 
                 public Collapse CollapseHidden { get; set; }
+
+                public CGSize FixedSize { get; set; }
+                public bool UseFixedSize { get; set; }
 
                 // Temporary to support stack creation fluent interface
                 internal StackType StackType;

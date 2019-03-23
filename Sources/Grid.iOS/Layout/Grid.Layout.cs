@@ -145,7 +145,7 @@ namespace GridView
                                         ? 0f
                                         : colDef.SizeType == SizeType.Fixed
                                             ? colDef.Size
-                                            : cell.View.Frame.Width;
+                                            : cell.AutoSizeSize.Width;
                                     cellWidth += cell.Position.Margin.Width();
                                     LogLine($"   {cell.Position} cellWidth={cellWidth}");
 
@@ -228,7 +228,7 @@ namespace GridView
                             c.Position.Horizontal != Alignment.Stretched);
                         if (autoSizedCells.Any())
                         {
-                            nfloat colWidth = autoSizedCells.Max(c => c.View.Frame.Width + c.Position.Margin.Width());
+                            nfloat colWidth = autoSizedCells.Max(c => c.AutoSizeSize.Width + c.Position.Margin.Width());
                             colWidth = NMath.Max(minColWidth[column], colWidth);
                             absoluteColumnWidth[column] = colWidth;
                             remaining -= colWidth;
@@ -304,7 +304,7 @@ namespace GridView
                                         ? 0f
                                         : rowDef.SizeType == SizeType.Fixed
                                             ? rowDef.Size
-                                            : cell.View.Frame.Height;
+                                            : cell.AutoSizeSize.Height;
                                     cellHeight += cell.Position.Margin.Height();
                                     LogLine($"   {cell.Position} cellHeight={cellHeight}");
 
@@ -387,7 +387,7 @@ namespace GridView
                             c.Position.Vertical != Alignment.Stretched);
                         if (autoSizedCells.Any())
                         {
-                            nfloat rowHeight = autoSizedCells.Max(c => c.View.Frame.Height + c.Position.Margin.Height());
+                            nfloat rowHeight = autoSizedCells.Max(c => c.AutoSizeSize.Height + c.Position.Margin.Height());
                             rowHeight = NMath.Max(minRowHeight[row], rowHeight);
                             absoluteRowHeight[row] = rowHeight;
                             remaining -= rowHeight;

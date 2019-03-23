@@ -317,7 +317,7 @@
 
                 var position = positions[cell.Position.Column, cell.Position.Row];
                 var cellSize = GetCellAbsoluteSize(absoluteColumnWidth, absoluteRowHeight, cell.Position);
-                var viewSize = cell.View.Frame.Size;
+                var viewSize = cell.AutoSizeSize;
 
                 LogLine($"{debugIndent}      position = {position}");
                 LogLine($"{debugIndent}      cellSize = {cellSize}");
@@ -393,7 +393,7 @@
 
                 if (cell.Position.NoResize || cell.Position.NoPosition)
                 {
-                    cellSize = cell.View.Frame.Size;
+                    cellSize = cell.AutoSizeSize;
                 }
                 if (cell.Position.NoPosition)
                 {

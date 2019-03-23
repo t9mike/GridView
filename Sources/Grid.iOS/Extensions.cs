@@ -159,6 +159,32 @@ namespace GridView
                 Margin = cell.Position.Margin.SetBottom(bottom)
             });
 
+        /// <summary>
+        /// Instead of setting size based on the view's Frame, use this.
+        /// Only used when column and/or row size is -1.
+        /// </summary>
+        public static Grid.Layout.Cell UseFixedSize(this Grid.Layout.Cell cell,
+            CGSize size) => new Grid.Layout.Cell(cell.View,
+            new Grid.Layout.Position(cell.Position)
+            {
+                UseFixedSize = true,
+                FixedSize = size
+
+            });
+
+        /// <summary>
+        /// Instead of setting size based on the view's Frame, use this.
+        /// Only used when column and/or row size is -1.
+        /// </summary>
+        public static Grid.Layout.Cell UseFixedSize(this Grid.Layout.Cell cell,
+            nfloat w, nfloat h) => new Grid.Layout.Cell(cell.View,
+            new Grid.Layout.Position(cell.Position)
+            {
+                UseFixedSize = true,
+                FixedSize = new CGSize(w, h)
+
+            });
+
         // Users may have this defined in other libraries: don't pollute
         internal static void SetWidth(this UIView view, nfloat width)
         {
