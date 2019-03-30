@@ -376,7 +376,7 @@ namespace GridView
                 nfloat fixedHeight = this.RowDefinitions.Where((d) => d.Size > 1).Select(d => d.Size).Sum();
                 nfloat remaining = totalHeight - fixedHeight;
 
-                // Add Height of auto sized columns
+                // Add Height of auto sized rows
                 for (int row = 0; row < this.RowDefinitions.Count(); row++)
                 {
                     var definition = this.RowDefinitions.ElementAt(row);
