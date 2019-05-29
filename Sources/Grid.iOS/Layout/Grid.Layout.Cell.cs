@@ -1,4 +1,6 @@
 ﻿using UIKit;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GridView
 {
@@ -32,6 +34,18 @@ namespace GridView
                 public CGSize AutoSizeSize => Position.UseFixedSize ? Position.FixedSize : View.Frame.Size;
 
                 public Position Position { get; internal set; }
+
+                public string DebugLabel
+                {
+                    get
+                    {
+                        var pieces = new List<string>();
+                        pieces.Add(GetHashCode().ToString());
+                        if (View != null) pieces.Add(View.GetType().ToString());
+                        if (Position.Tag != null) pieces.Add(Position.Tag.ToString());
+                        return string.Join(",", pieces);
+                    }
+                }
 
                 /// <summary>
                 /// True when the cell's height will be inspected to determine row height if 

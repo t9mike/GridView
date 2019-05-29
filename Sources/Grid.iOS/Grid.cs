@@ -261,10 +261,44 @@
                 }
             }
 
-            LogLine($"{debugIndent}Cells:");
+            LogLine($"{debugIndent}Cells at start of layout:");
             foreach (var cell in this.CurrentLayout.Cells)
             {
                 LogLine($"{debugIndent}   {cell}");
+            }
+
+            var horizontallyStretchedCells = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoWidthSizeCalcs && 
+                c.View != null && c.Position.Horizontal == Layout.Alignment.Stretched);
+            if (horizontallyStretchedCells.Any())
+            {
+                LogLine($"{debugIndent}   Setting width of horizontally stretched cells");
+                var widths1 = this.CurrentLayout.CalculateAbsoluteColumnWidth(this).Item2;
+                foreach (var cell in horizontallyStretchedCells)
+                {
+                    nfloat w = CalcSpanWidth(cell, widths1);
+                    LogLine($"{debugIndent}      Setting cell.View Width to {w}");
+                    cell.View.SetWidth(w);
+                    LogLine($"{debugIndent}      Before LayoutSubviews {cell.DebugLabel}");
+                    cell.View.LayoutSubviews();
+                    LogLine($"{debugIndent}      After LayoutSubviews cell.View Size={cell.View.Frame.Size} {cell.DebugLabel}");
+                }
+            }
+
+            var verticallyStretchedCells = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoWidthSizeCalcs &&
+                c.View != null && c.Position.Vertical == Layout.Alignment.Stretched);
+            if (verticallyStretchedCells.Any())
+            {
+                LogLine($"{debugIndent}   Setting height of vertically stretched cells");
+                var heights1 = this.CurrentLayout.CalculateAbsoluteRowHeight(this).Item2;
+                foreach (var cell in verticallyStretchedCells)
+                {
+                    nfloat h = CalcSpanHeight(cell, heights1);
+                    LogLine($"{debugIndent}      Setting cell.View Height to {h}");
+                    cell.View.SetHeight(h);
+                    LogLine($"{debugIndent}      Before LayoutSubviews {cell.DebugLabel}");
+                    cell.View.LayoutSubviews();
+                    LogLine($"{debugIndent}      After LayoutSubviews cell.View Size={cell.View.Frame.Size} {cell.DebugLabel}");
+                }
             }
 
             // Calculate row sizes
@@ -280,7 +314,7 @@
             LogLine($"{debugIndent}   AutoWidth={AutoWidth} gridWidth={gridWidth}, Frame.Width={Frame.Width}");
 
             var newGridFrame = new CGRect(Frame.Location, new CGSize(gridWidth, gridHeight));
-            LogLine($"{debugIndent}   newGridFrame={newGridFrame}, Frame={Frame}");
+            LogLine($"{debugIndent}   newGridFrame={newGridFrame}, old Frame={Frame}");
             Frame = newGridFrame;
 
             LogLine($"{debugIndent}   RowDefinitions      = [{string.Join(",", this.CurrentLayout.RowDefinitions.Select(r => r.Size))}]");
@@ -295,7 +329,7 @@
             foreach (var cell in this.CurrentLayout.Cells)
             {
                 LogLine();
-                LogLine($"{debugIndent}   Laying out col {cell.Position.Column}, row {cell.Position.Row}, tag '{cell.Position.Tag}', {cell.View?.GetType()}");
+                LogLine($"{debugIndent}   Laying out col {cell.Position.Column}, row {cell.Position.Row}, {cell.DebugLabel}");
 
                 if (!cell.IncludeInAutoWidthSizeCalcs && !cell.IncludeInAutoHeightSizeCalcs)
                 {
@@ -408,6 +442,7 @@
                     SetCellFrame(cell, newFrame);
                 }
                 LogLine();
+                Log($"{debugIndent}      Finished {cell.DebugLabel}");
             }
 
             LogLine();
@@ -438,6 +473,26 @@
                 var e = new LayoutCompletedEventArgs(oldSize, newSize);
                 LayoutCompleted(e);
             }
+        }
+
+        private nfloat CalcSpanWidth(Layout.Cell cell, nfloat[] columnWidth)
+        {
+            nfloat spanWidth = 0;
+            for (int col = cell.Position.Column; col < cell.Position.Column + cell.Position.ColumnSpan; col++)
+            {
+                spanWidth += columnWidth[col];
+            }
+            return spanWidth;
+        }
+
+        private nfloat CalcSpanHeight(Layout.Cell cell, nfloat[] columnHeight)
+        {
+            nfloat spanHeight = 0;
+            for (int row = cell.Position.Row; row < cell.Position.Row + cell.Position.RowSpan; row++)
+            {
+                spanHeight += columnHeight[row];
+            }
+            return spanHeight;
         }
 
         // Log() and LogLine() will be optimized away in non-DEBUG
