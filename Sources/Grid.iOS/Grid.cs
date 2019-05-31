@@ -277,7 +277,7 @@
                 {
                     nfloat w = CalcSpanWidth(cell, widths1);
                     LogLine($"{debugIndent}      Setting cell.View Width to {w}");
-                    cell.View.SetWidth(w);
+                    cell.View.SetWidth(w - cell.Position.Margin.Width());
                     LogLine($"{debugIndent}      Before LayoutSubviews {cell.DebugLabel}");
                     cell.View.LayoutSubviews();
                     LogLine($"{debugIndent}      After LayoutSubviews cell.View Size={cell.View.Frame.Size} {cell.DebugLabel}");
@@ -294,7 +294,7 @@
                 {
                     nfloat h = CalcSpanHeight(cell, heights1);
                     LogLine($"{debugIndent}      Setting cell.View Height to {h}");
-                    cell.View.SetHeight(h);
+                    cell.View.SetHeight(h - cell.Position.Margin.Height());
                     LogLine($"{debugIndent}      Before LayoutSubviews {cell.DebugLabel}");
                     cell.View.LayoutSubviews();
                     LogLine($"{debugIndent}      After LayoutSubviews cell.View Size={cell.View.Frame.Size} {cell.DebugLabel}");
