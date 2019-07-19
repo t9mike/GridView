@@ -118,6 +118,9 @@ namespace GridView
 			{
                 var absoluteColumnWidth = new nfloat[this.ColumnDefinitions.Count()];
 
+                var visibleCols = Cells.Where(c => c.IncludeInAutoWidthSizeCalcs).Select(c => c.Position.Column).Distinct();
+                int numVisibleCols = visibleCols.Count();
+
                 // Calculate full height of grid
                 nfloat totalWidth;
 
@@ -205,7 +208,7 @@ namespace GridView
 
                     totalWidth = maxColWidth.Sum(w => (float)w);
                     int numCols = maxColWidth.Count(w => w > 0);
-                    totalWidth += (numCols - 1) * Spacing + Padding.Left + Padding.Right;
+                    totalWidth += numVisibleCols * Spacing + Padding.Left + Padding.Right;
                 }
                 else
                 {
@@ -238,7 +241,7 @@ namespace GridView
 
                 // Add size of padding and spacing
 				remaining -= this.Padding.Left + this.Padding.Right;
-				remaining -= (this.ColumnDefinitions.Count() - 1) * this.Spacing;
+				remaining -= (numVisibleCols - 1) * this.Spacing;
 
 				remaining = (nfloat)Math.Max(0, remaining);
 
@@ -260,7 +263,7 @@ namespace GridView
                     totalWidth = (nfloat)(
                         absoluteColumnWidth.Sum(w => w) +
                         Padding.Left + this.Padding.Right +
-                        (ColumnDefinitions.Count() - 1) * this.Spacing
+                        (numVisibleCols - 1) * this.Spacing
                         );
                 }
 
