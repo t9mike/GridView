@@ -276,6 +276,9 @@ namespace GridView
 			{
                 var absoluteRowHeight = new nfloat[this.RowDefinitions.Count()];
 
+                var visibleRows = Cells.Where(c => c.IncludeInAutoHeightSizeCalcs).Select(c => c.Position.Row).Distinct();
+                int numVisibleRows = visibleRows.Count();
+
                 // Calculate full height of grid
                 nfloat totalHeight;
 
@@ -364,7 +367,7 @@ namespace GridView
 
                     totalHeight = maxRowHeight.Sum(h => (float)h);
                     int numRows = maxRowHeight.Count(h => h > 0);
-                    totalHeight += (numRows - 1) * Spacing + Padding.Top + Padding.Bottom;
+                    totalHeight += (numVisibleRows - 1) * Spacing + Padding.Top + Padding.Bottom;
                 }
                 else
                 {
@@ -397,13 +400,12 @@ namespace GridView
 
                 // Add size of padding and spacing
                 remaining -= this.Padding.Top + this.Padding.Bottom;
-                remaining -= (this.RowDefinitions.Count() - 1) * this.Spacing;
+                remaining -= (numVisibleRows - 1) * this.Spacing;
 
                 remaining = (nfloat)Math.Max(0, remaining);
 
                 for (int row = 0; row < this.RowDefinitions.Count(); row++)
                 {
-
                     var definition = this.RowDefinitions.ElementAt(row);
                     if (definition.Size != -1)
                     {
@@ -420,7 +422,7 @@ namespace GridView
                     totalHeight = (nfloat)(
                         absoluteRowHeight.Sum(h => h) +
                         Padding.Top + this.Padding.Bottom +
-                        (RowDefinitions.Count() - 1) * this.Spacing
+                        (numVisibleRows - 1) * this.Spacing
                         );
                 }
 
