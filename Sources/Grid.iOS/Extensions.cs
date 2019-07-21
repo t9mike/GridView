@@ -130,6 +130,15 @@ namespace GridView
             new UIEdgeInsets(inset.Top, inset.Left, inset.Bottom, right);
         public static UIEdgeInsets SetBottom(this UIEdgeInsets inset, nfloat bottom) =>
             new UIEdgeInsets(inset.Top, inset.Left, bottom, inset.Right);
+        
+        public static Grid.Insets SetTop(this Grid.Insets inset, float top) =>
+            new Grid.Insets(inset.Left, top, inset.Right, inset.Bottom);
+        public static Grid.Insets SetLeft(this Grid.Insets inset, float left) =>
+            new Grid.Insets(left, inset.Top, inset.Right, inset.Bottom);
+        public static Grid.Insets SetRight(this Grid.Insets inset, float right) =>
+            new Grid.Insets(inset.Left, inset.Top, right, inset.Bottom);
+        public static Grid.Insets SetBottom(this Grid.Insets inset, float bottom) =>
+            new Grid.Insets(inset.Left, inset.Top, inset.Right, bottom);
 
         public static Grid.Layout.Cell MarginTop(this Grid.Layout.Cell cell,
             nfloat top) => new Grid.Layout.Cell(cell.View,
