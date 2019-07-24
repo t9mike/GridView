@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using CoreGraphics;
     using UIKit;
 
@@ -493,6 +494,25 @@
                 spanHeight += columnHeight[row];
             }
             return spanHeight;
+        }
+
+        private bool Disposed = false;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!Disposed && disposing)
+            {
+                foreach (var layout in layouts)
+                {
+                    foreach (var cell in layout.Cells)
+                    {
+                        cell.View?.Dispose();
+                    }
+                }
+                layouts.Clear();
+            }
+            base.Dispose(disposing);
+            Disposed = true;
         }
 
         // Log() and LogLine() will be optimized away in non-DEBUG
