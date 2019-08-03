@@ -29,7 +29,7 @@ namespace GridView
 
 				public CGSize InitialSize { get; private set; }
 
-				public UIView View { get; private set; }
+				public UIView View { get; internal set; }
 
                 public CGSize AutoSizeSize => Position.UseFixedSize ? Position.FixedSize : View.Frame.Size;
 

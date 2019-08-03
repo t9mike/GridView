@@ -78,6 +78,20 @@
             return grid;
         }
 
+        public void SwapInView(UIView oldView, UIView newView)
+        {
+            var cell = CurrentLayout.FindCell(oldView);
+            if (cell == null)
+            {
+                throw new ArgumentException($"oldView {oldView} is not in the Grid");
+            }
+            cell.View = newView;
+            oldView.RemoveFromSuperview();
+            AddSubview(newView);
+            SetNeedsLayout();
+        }
+
+
         #region Layout
 
         /// <summary>
