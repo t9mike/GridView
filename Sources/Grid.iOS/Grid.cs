@@ -261,6 +261,8 @@
 
             this.UpdateLayout();
 
+            if (CurrentLayout == null) return;
+            
             // Allow streched cells that are in an auto sized column or row only if there is at
             // least one non-stretched cell that starts that same column/row
             foreach (var cell in this.CurrentLayout.Cells)             {                 if (cell.Position.Horizontal == Layout.Alignment.Stretched &&                     this.CurrentLayout.ColumnDefinitions[cell.Position.Column].SizeType == Layout.SizeType.Auto &&
