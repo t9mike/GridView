@@ -11,6 +11,11 @@
     public partial class Grid : UIView
     {
         /// <summary>
+        /// Used in exceptions to identify grid. By default is the hashcode of the object.
+        /// </summary>
+        public string ID;
+        
+        /// <summary>
         /// Set to true to enable layout logging in DEBUG compile mode.
         /// Default is off. Logging is never performed in non-DEBUG
         /// mode.
@@ -36,15 +41,15 @@
             }
         }
 
-        public Grid()
+        public Grid(string id = null)
         {
-
+            ID = id ?? base.GetHashCode().ToString();
         }
 
         /// <summary>
         /// Adds a default layout.
         /// </summary>
-        public Grid(Layout layout)
+        public Grid(Layout layout, string id = null) : this(id)
         {
             AddLayout(layout);
         }
@@ -83,7 +88,7 @@
             var cell = CurrentLayout.FindCell(oldView);
             if (cell == null)
             {
-                throw new ArgumentException($"oldView {oldView} is not in the Grid");
+                throw new ArgumentException($"Grid {ID}: oldView {oldView} is not in the Grid");
             }
             cell.View = newView;
             oldView.RemoveFromSuperview();
@@ -268,13 +273,13 @@
             foreach (var cell in this.CurrentLayout.Cells)             {                 if (cell.Position.Horizontal == Layout.Alignment.Stretched &&                     this.CurrentLayout.ColumnDefinitions[cell.Position.Column].SizeType == Layout.SizeType.Auto &&
                     !this.CurrentLayout.Cells.Any(c => c.Position.Column == cell.Position.Column && c.Position.Horizontal != Layout.Alignment.Stretched))
                 {
-                    throw new Exception($"Stretched horizontal cell alignment on row {cell.Position.Row}, col {cell.Position.Column} cannot be used in an auto sized column when there is no other cell in that column that is not stretched");
+                    throw new Exception($"Grid {ID}: Stretched horizontal cell alignment on row {cell.Position.Row}, col {cell.Position.Column} cannot be used in an auto sized column when there is no other cell in that column that is not stretched");
                 }
                  if (cell.Position.Vertical == Layout.Alignment.Stretched &&
                     this.CurrentLayout.RowDefinitions[cell.Position.Row].SizeType == Layout.SizeType.Auto &&
                     !this.CurrentLayout.Cells.Any(c => c.Position.Row == cell.Position.Row && c.Position.Vertical != Layout.Alignment.Stretched))
                 {
-                    throw new Exception($"Stretched vertical cell alignment on row {cell.Position.Row}, col {cell.Position.Column} cannot be used in an auto sized row when there is no other cell in that column that is not stretched");
+                    throw new Exception($"Grid {ID}: Stretched vertical cell alignment on row {cell.Position.Row}, col {cell.Position.Column} cannot be used in an auto sized row when there is no other cell in that column that is not stretched");
                 }
             }
 
@@ -356,12 +361,12 @@
 
                 if (cell.Position.Row >= this.CurrentLayout.RowDefinitions.Count())
                 {
-                    throw new Exception($"a cell is defined at row {cell.Position.Row}, col {cell.Position.Column} but there are only {this.CurrentLayout.RowDefinitions.Count()} rows defined in the grid");
+                    throw new Exception($"Grid {ID}: a cell is defined at row {cell.Position.Row}, col {cell.Position.Column} but there are only {this.CurrentLayout.RowDefinitions.Count()} rows defined in the grid");
                 }
 
                 if (cell.Position.Column >= this.CurrentLayout.ColumnDefinitions.Count())
                 {
-                    throw new Exception($"a cell is defined at row {cell.Position.Row}, col {cell.Position.Column} but there are only {this.CurrentLayout.ColumnDefinitions.Count()} columns defined in the grid");
+                    throw new Exception($"Grid {ID}: a cell is defined at row {cell.Position.Row}, col {cell.Position.Column} but there are only {this.CurrentLayout.ColumnDefinitions.Count()} columns defined in the grid");
                 }
 
                 cell.View.LayoutSubviews();
