@@ -369,7 +369,7 @@
                     throw new Exception($"Grid {ID}: a cell is defined at row {cell.Position.Row}, col {cell.Position.Column} but there are only {this.CurrentLayout.ColumnDefinitions.Count()} columns defined in the grid");
                 }
 
-                cell.View.LayoutSubviews();
+                cell.View?.LayoutSubviews();
 
                 var position = positions[cell.Position.Column, cell.Position.Row];
                 var cellSize = GetCellAbsoluteSize(absoluteColumnWidth, absoluteRowHeight, cell.Position);
@@ -458,7 +458,7 @@
 
                 var newFrame = new CGRect(position, cellSize);
                 Log($"{debugIndent}      newFrame={newFrame}, cell.View.Frame={cell.View?.Frame}");
-                if (newFrame != cell.View.Frame)
+                if (newFrame != cell.View?.Frame)
                 {
                     Log(": UPDATE");
                     SetCellFrame(cell, newFrame);
@@ -482,7 +482,10 @@
         /// cell.View's type to do something special based on the cell.</remarks>
         protected virtual void SetCellFrame(Layout.Cell cell, CGRect frame)
         {
-            cell.View.Frame = frame;
+            if (cell.View != null)
+            {
+                cell.View.Frame = frame;
+            }
         }
 
 

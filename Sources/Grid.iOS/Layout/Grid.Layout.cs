@@ -440,12 +440,6 @@ namespace GridView
 
 			public static Layout operator +(Layout layout, Cell cell)
 			{
-                if (cell.View == null)
-                {
-                    LogLine($"Skipping {cell}: null view");
-                    return layout;
-                }
-                
                 // "Stack" is supported through automatic creation of 
                 // necessary grid rows/columns
                 if (cell.Position.StackType == StackType.Horizontal)

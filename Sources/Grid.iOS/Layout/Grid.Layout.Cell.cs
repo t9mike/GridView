@@ -31,7 +31,7 @@ namespace GridView
 
 				public UIView View { get; internal set; }
 
-                public CGSize AutoSizeSize => Position.UseFixedSize ? Position.FixedSize : View.Frame.Size;
+                public CGSize AutoSizeSize => Position.UseFixedSize ? Position.FixedSize : View == null ? CGSize.Empty : View.Frame.Size;
 
                 public Position Position { get; internal set; }
 
