@@ -202,7 +202,7 @@
                             x += this.CurrentLayout.Spacing;
                         }
                     }
-                    pos[col, row] = new CGPoint(x, y);
+                    pos[col, row] = new CGPoint(x, y).Round();
                     x += width;
                 }
 
@@ -484,7 +484,7 @@
         {
             if (cell.View != null)
             {
-                cell.View.Frame = frame;
+                cell.View.Frame = frame.Round();
             }
         }
 
