@@ -113,6 +113,12 @@
         /// </summary>
         public bool AutoHeight = true;
 
+        /// <summary>
+        /// When true, size and positions will be rounded
+        /// to 0.5 resolution.
+        /// </summary>
+        public bool RoundLayout = false;
+
         private Layout currentLayout;
 
         private List<Layout> layouts = new List<Layout>();
@@ -202,7 +208,11 @@
                             x += this.CurrentLayout.Spacing;
                         }
                     }
-                    pos[col, row] = new CGPoint(x, y).Round();
+                    pos[col, row] = new CGPoint(x, y);
+                    if (RoundLayout)
+                    {
+                        pos[col, row] = pos[col, row].Round();
+                    }
                     x += width;
                 }
 
@@ -299,7 +309,12 @@
                 {
                     nfloat w = CalcSpanWidth(cell, widths1);
                     LogLine($"{debugIndent}      Setting cell.View Width to {w}");
-                    cell.View.SetWidth(w - cell.Position.Margin.Width());
+                    nfloat width = w - cell.Position.Margin.Width();
+                    if (RoundLayout)
+                    {
+                        width = width.RoundToScale();
+                    }
+                    cell.View.SetWidth(w);
                     LogLine($"{debugIndent}      Before LayoutSubviews {cell.DebugLabel}");
                     cell.View.LayoutSubviews();
                     LogLine($"{debugIndent}      After LayoutSubviews cell.View Size={cell.View.Frame.Size} {cell.DebugLabel}");
@@ -316,7 +331,12 @@
                 {
                     nfloat h = CalcSpanHeight(cell, heights1);
                     LogLine($"{debugIndent}      Setting cell.View Height to {h}");
-                    cell.View.SetHeight(h - cell.Position.Margin.Height());
+                    nfloat height = h - cell.Position.Margin.Height();
+                    if (RoundLayout)
+                    {
+                        height = height.RoundToScale();
+                    }
+                    cell.View.SetHeight(height);
                     LogLine($"{debugIndent}      Before LayoutSubviews {cell.DebugLabel}");
                     cell.View.LayoutSubviews();
                     LogLine($"{debugIndent}      After LayoutSubviews cell.View Size={cell.View.Frame.Size} {cell.DebugLabel}");
@@ -484,7 +504,11 @@
         {
             if (cell.View != null)
             {
-                cell.View.Frame = frame.Round();
+                if (RoundLayout)
+                {
+                    frame = frame.RoundLocation();
+                }
+                cell.View.Frame = frame;
             }
         }
 

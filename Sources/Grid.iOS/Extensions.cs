@@ -197,13 +197,13 @@ namespace GridView
         // Users may have this defined in other libraries: don't pollute
         internal static void SetWidth(this UIView view, nfloat width)
         {
-            view.Frame = new CGRect(view.Frame.X, view.Frame.Y, width, view.Frame.Height).Round();
+            view.Frame = new CGRect(view.Frame.X, view.Frame.Y, width, view.Frame.Height);
         }
 
         // Users may have this defined in other libraries: don't pollute
         internal static void SetHeight(this UIView view, nfloat height)
         {
-            view.Frame = new CGRect(view.Frame.X, view.Frame.Y, view.Frame.Width, height).Round();
+            view.Frame = new CGRect(view.Frame.X, view.Frame.Y, view.Frame.Width, height);
         }
 
         internal static Grid.Layout.Cell Align(Grid.Layout.Cell cell, Grid.Layout.Alignment alignment,
@@ -225,20 +225,20 @@ namespace GridView
         /// </summary>
         internal static CGPoint Round(this CGPoint point)
         {
-            return new CGPoint(Round0p5(point.X), Round0p5(point.Y));
+            return new CGPoint(RoundToScale(point.X), RoundToScale(point.Y));
         }
 
         /// <summary>
         /// Rounds X, Y to to 0.5 precision.
         /// </summary>
-        internal static CGRect Round(this CGRect rect)
+        internal static CGRect RoundLocation(this CGRect rect)
         {
-            return new CGRect(Round0p5(rect.X), Round0p5(rect.Y), Round0p5(rect.Width), Round0p5(rect.Height));
+            return new CGRect(RoundToScale(rect.X), RoundToScale(rect.Y), rect.Width, rect.Height);
         }
 
-        static nfloat Round0p5(nfloat value)
+        internal static nfloat RoundToScale(this nfloat value)
         {
-            return (nfloat)(Math.Round((double)value * 2, MidpointRounding.AwayFromZero) / 2);
+            return (nfloat)(Math.Round((double)value * UIScreen.MainScreen.Scale, MidpointRounding.AwayFromZero) / UIScreen.MainScreen.Scale);
         }
     }
 }
