@@ -71,6 +71,13 @@ namespace GridView
 
                 public CGSize FixedSize { get; set; }
                 public bool UseFixedSize { get; set; }
+                
+                /// <summary>
+                /// If the view is a UIScrollView and this is set, autosize will use
+                /// ContentSize of the scroll view to size based on actual contained
+                /// content.
+                /// </summary>
+                public bool UseContentSize { get; set; }
 
                 // Temporary to support stack creation fluent interface
                 internal StackType StackType;

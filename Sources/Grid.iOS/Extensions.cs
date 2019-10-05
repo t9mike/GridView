@@ -194,6 +194,23 @@ namespace GridView
 
             });
 
+        /// <summary>
+        /// If the view is a UIScrollView and this is set, autosize will use
+        /// ContentSize of the scroll view to size based on actual contained
+        /// content.
+        /// </summary>
+        public static Grid.Layout.Cell UseContentSize(this Grid.Layout.Cell cell,
+            bool useContentSize) => new Grid.Layout.Cell(cell.View,
+            new Grid.Layout.Position(cell.Position) {UseContentSize = useContentSize});
+
+        /// <summary>
+        /// If the view is a UIScrollView and this is set, autosize will use
+        /// ContentSize of the scroll view to size based on actual contained
+        /// content.
+        /// </summary>
+        public static Grid.Layout.Cell UseContentSize(this Grid.Layout.Cell cell) => 
+            cell.UseContentSize(true);
+
         // Users may have this defined in other libraries: don't pollute
         internal static void SetWidth(this UIView view, nfloat width)
         {
