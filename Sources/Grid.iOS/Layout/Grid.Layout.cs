@@ -130,7 +130,7 @@ namespace GridView
                 {
                     LogLine($"CalculateAbsoluteColumnWidth AutoWidth");
 
-                    var maxColWidth = new nfloat[this.ColumnDefinitions.Count()]; 
+                    var maxColWidth = new nfloat[this.ColumnDefinitions.Count()];
                     int maxColSpan = grid.CurrentLayout.cells.Max(c => c.Position.ColumnSpan);
 
                     for (int colSpan = 1; colSpan <= maxColSpan; colSpan++)
@@ -200,12 +200,14 @@ namespace GridView
                         }
                     }
 
+#if ENABLE_DEBUG_LOG
                     LogLine("minColWidth:");
                     for (int col = 0; col < this.ColumnDefinitions.Count(); col++)
                     {
                         LogLine($"   col {col}: {minColWidth[col]}");
                     }
-
+#endif
+                    
                     totalWidth = maxColWidth.Sum(w => (float)w);
                     int numCols = maxColWidth.Count(w => w > 0);
                     totalWidth += numVisibleCols * Spacing + Padding.Left + Padding.Right;
@@ -362,11 +364,13 @@ namespace GridView
                         }
                     }
 
+#if ENABLE_DEBUG_LOG
                     LogLine("minRowHeight:");
                     for (int row = 0; row < this.RowDefinitions.Count(); row++)
                     {
                         LogLine($"   row {row}: {minRowHeight[row]}");
                     }
+#endif
 
                     totalHeight = maxRowHeight.Sum(h => (float)h);
                     int numRows = maxRowHeight.Count(h => h > 0);

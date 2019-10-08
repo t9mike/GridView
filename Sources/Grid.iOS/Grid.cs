@@ -270,8 +270,13 @@
         {
             var oldSize = Frame.Size;
 
+            #if ENABLE_DEBUG_LOG
             string debugIndent = String.Concat(Enumerable.Repeat("   ", numSuperviews(this)));
             LogLine($"{debugIndent}LayoutSubviews {GetHashCode()} {this.GetType()}");
+            #else
+            const string debugIndent = "";
+            #endif
+            
             base.LayoutSubviews();
 
             this.UpdateLayout();
@@ -280,12 +285,16 @@
             
             // Allow streched cells that are in an auto sized column or row only if there is at
             // least one non-stretched cell that starts that same column/row
-            foreach (var cell in this.CurrentLayout.Cells)             {                 if (cell.Position.Horizontal == Layout.Alignment.Stretched &&                     this.CurrentLayout.ColumnDefinitions[cell.Position.Column].SizeType == Layout.SizeType.Auto &&
+            foreach (var cell in this.CurrentLayout.Cells)
+            {
+                if (cell.Position.Horizontal == Layout.Alignment.Stretched &&
+                    this.CurrentLayout.ColumnDefinitions[cell.Position.Column].SizeType == Layout.SizeType.Auto &&
                     !this.CurrentLayout.Cells.Any(c => c.Position.Column == cell.Position.Column && c.Position.Horizontal != Layout.Alignment.Stretched))
                 {
                     throw new Exception($"Grid {ID}: Stretched horizontal cell alignment on row {cell.Position.Row}, col {cell.Position.Column} cannot be used in an auto sized column when there is no other cell in that column that is not stretched");
                 }
-                 if (cell.Position.Vertical == Layout.Alignment.Stretched &&
+
+                if (cell.Position.Vertical == Layout.Alignment.Stretched &&
                     this.CurrentLayout.RowDefinitions[cell.Position.Row].SizeType == Layout.SizeType.Auto &&
                     !this.CurrentLayout.Cells.Any(c => c.Position.Row == cell.Position.Row && c.Position.Vertical != Layout.Alignment.Stretched))
                 {
@@ -293,12 +302,14 @@
                 }
             }
 
+            #if ENABLE_DEBUG_LOG
             LogLine($"{debugIndent}Cells at start of layout:");
             foreach (var cell in this.CurrentLayout.Cells)
             {
                 LogLine($"{debugIndent}   {cell}");
             }
-
+            #endif
+            
             var horizontallyStretchedCells = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoWidthSizeCalcs && 
                 c.View != null && c.Position.Horizontal == Layout.Alignment.Stretched);
             if (horizontallyStretchedCells.Any())
@@ -567,26 +578,22 @@
         // compile modes, so these calls will not effect performande
         // of the real app
 
-        [Conditional("DEBUG")]
+        [Conditional("ENABLE_DEBUG_LOG")]
         internal static void Log(string msg = "")
         {
-#if ENABLE_DEBUG_LOG
             if (Enable_Debug_Log)
             {
                 Debug.Write(msg);
             }
-#endif
         }
 
-        [Conditional("DEBUG")]
+        [Conditional("ENABLE_DEBUG_LOG")]
         internal static void LogLine(string msg = "")
         {
-#if ENABLE_DEBUG_LOG
             if (Enable_Debug_Log)
             {
                 Debug.WriteLine(msg);
             }
-#endif
         }
     }
 }
