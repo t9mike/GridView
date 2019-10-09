@@ -43,7 +43,9 @@
 
         public Grid(string id = null)
         {
+#if ENABLE_DEBUG_LOG
             ID = id ?? base.GetHashCode().ToString();
+#endif
         }
 
         /// <summary>
@@ -97,7 +99,7 @@
         }
 
 
-        #region Layout
+#region Layout
 
         /// <summary>
         /// Sets width automatically. Note that if a column uses % sizing,
@@ -270,12 +272,12 @@
         {
             var oldSize = Frame.Size;
 
-            #if ENABLE_DEBUG_LOG
+#if ENABLE_DEBUG_LOG
             string debugIndent = String.Concat(Enumerable.Repeat("   ", numSuperviews(this)));
             LogLine($"{debugIndent}LayoutSubviews {GetHashCode()} {this.GetType()}");
-            #else
+#else
             const string debugIndent = "";
-            #endif
+#endif
             
             base.LayoutSubviews();
 
@@ -302,13 +304,13 @@
                 }
             }
 
-            #if ENABLE_DEBUG_LOG
+#if ENABLE_DEBUG_LOG
             LogLine($"{debugIndent}Cells at start of layout:");
             foreach (var cell in this.CurrentLayout.Cells)
             {
                 LogLine($"{debugIndent}   {cell}");
             }
-            #endif
+#endif
             
             var horizontallyStretchedCells = this.CurrentLayout.Cells.Where(c => c.IncludeInAutoWidthSizeCalcs && 
                 c.View != null && c.Position.Horizontal == Layout.Alignment.Stretched);
@@ -524,7 +526,7 @@
         }
 
 
-        #endregion
+#endregion
 
         protected virtual void OnLayoutCompleted(CGSize oldSize, CGSize newSize)
         {
