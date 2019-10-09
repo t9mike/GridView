@@ -327,7 +327,7 @@
                     {
                         width = width.RoundToScale();
                     }
-                    cell.View.SetWidth(w);
+                    cell.View.SetWidth(width);
                     LogLine($"{debugIndent}      Before LayoutSubviews {cell.DebugLabel}");
                     cell.View.LayoutSubviews();
                     LogLine($"{debugIndent}      After LayoutSubviews cell.View Size={cell.View.Frame.Size} {cell.DebugLabel}");
